@@ -1,0 +1,138 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+    overflow: auto;
+    /*overflow-y: hidden;*/
+
+}
+
+.left-column, .middle-column, .right-column {
+    flex: 1;
+    padding: 20px;
+    border-right: 5px solid #000;
+    height: 100%;
+}
+.only_reght_column{
+    flex: 0.8;
+    padding: 20px;
+    border-right: 5px solid #000;
+    height: 100%;
+}
+.left-column {
+    flex: 0.2; /* 设置左侧列宽度为 20% */
+    background-color: aqua;
+    align-items: center;
+}
+.middle-column {
+    flex: 0.6; /* 设置中间列宽度为 60% */
+}
+
+.right-column {
+    flex: 0.2; /* 设置右侧列宽度为 20% */
+}
+.middle-column{
+    align-items: center;
+}
+
+.right-column {
+    border-right: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.search-box {
+    margin-bottom: 10px;
+}
+
+.search-result {
+    border: 1px solid #ccc;
+    padding: 5px;
+    margin-bottom: 20px;
+    height: 70%;
+    overflow-y: auto;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+
+
+}
+
+.add-student, .add-teacher {
+    margin-top: 10px;
+}
+.result_box {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+}
+.result_box:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    background-color: #e0e0e0;
+}
+.result_box.selected{
+    background-color: #e0e0e0;
+}
+
+.avatar {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.avatar img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
+.info {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+}
+
+.top-info, .bottom-info {
+    padding: 5px;
+}
+
+.top-info p, .bottom-info p {
+    margin: 5px 0;
+}
+.context-menu {
+    position: absolute;
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
+    padding: 0; /* 取消外边距 */
+    box-sizing: border-box; /* 内边距不会增加元素的总宽度 */
+
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.context-menu-item {
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border-bottom: 1px solid #ccc; /* 添加垂直分隔线 */
+}
+
+.context-menu-item:last-child {
+    border-bottom: none; /* 最后一个菜单项去除分隔线 */
+}
+
+.context-menu-item:hover {
+    background-color: #e0e0e0;
+}
