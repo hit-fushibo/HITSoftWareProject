@@ -80,10 +80,14 @@
         <td>昵称：</td>
         <td><input type="text" id="nickname" :value="nickname" placeholder="Enter new nickname"></td>
       </tr>
+      <tr>
+        <button id="submitBtn" @click="updateUserInfo">提交修改</button>
+      </tr>
     </table>
 
-    <button id="submitBtn" @click="updateUserInfo">提交修改</button>
 
+
+    <img :src="pic" alt="个人头像" width="100">
     <table border="1">
       <tr>
         <td>上传新头像：</td>
@@ -142,7 +146,7 @@
     },
     created(){
       let jwtToken=sessionStorage.getItem("jwtToken");
-      console.log(jwtToken)
+      // console.log(jwtToken)
       // 发送GET请求
       axios.get('http://localhost:9090/user/userinfo', {
         headers: {
@@ -152,7 +156,7 @@
         this.uid=response.data.data.uid;
         this.name=response.data.data.name;
         this.email=response.data.data.email;
-        this.pic="touxiang.png";
+        this.pic=(response.data.data.usrPic==null||response.data.data.usrPic==="")? "usr_pic/defaultPic.png":response.data.data.usrPic;
       }).catch(error => {
         alert("请登录！");
         window.location.href="login.html";
@@ -377,8 +381,8 @@
     el: '#searchResult',
     data: {
       results: [
-        {img: 'touxiang.png', name: '张三', id: '987654321', email: 'zhangsan@example.com'},
-        {img: 'touxiang.png', name: '李四', id: '123456789', email: 'lisi@example.com'},
+        {img: 'usr_pic/defaultPic.png', name: '张三', id: '987654321', email: 'zhangsan@example.com'},
+        {img: 'usr_pic/defaultPic.png', name: '李四', id: '123456789', email: 'lisi@example.com'},
       ]
     },
     methods: {
@@ -495,7 +499,7 @@
     console.log('添加老师的 ID 为:', id);
   }
 
-  //个人设置展示逻辑
+  //----------个人设置展示逻辑----------
   let processVue=new Vue({
     el: "#setting",
     data: {
@@ -509,6 +513,7 @@
     methods: {
       updateUserInfo(){
         console.log("updateUserInfo")
+
       }
     },
     created(){
@@ -525,7 +530,9 @@
         this.name=response.data.data.name;
         this.email=response.data.data.email;
         this.nickname=response.data.data.nickname;
-        this.pic="touxiang.png";
+        this.pic=(response.data.data.usrPic==null||response.data.data.usrPic==="")? "usr_pic/defaultPic.png":response.data.data.usrPic;
+
+
       }).catch(error => {
         alert("请登录！");
         window.location.href="login.html";

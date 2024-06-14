@@ -3,10 +3,12 @@ package com.example.springboot.mapper.Impl;
 import com.example.springboot.mapper.UserMapper;
 import com.example.springboot.pojo.Users;
 import com.example.springboot.utils.DBUtil;
+import com.example.springboot.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
+import java.util.Map;
 import java.util.Objects;
 @Component
 public class UserMapperImpl implements UserMapper {
@@ -48,34 +50,26 @@ public class UserMapperImpl implements UserMapper {
     @Override
     public int update(Users user) {
         dbUtil.getConnection();
-        String uid=(String) user.getUid();
-//        String pwd=(String) user.getPwd();
-        String phone=(String) user.getPhone();
-        String email=(String) user.getEmail();
-        String name=(String) user.getName();
-        String nickname=(String) user.getNickname();
+        String uid= user.getUid();
+        String phone= user.getPhone();
+        String email= user.getEmail();
+        String name= user.getName();
+        String nickname= user.getNickname();
         String sql ="select * from users where phone='"+phone+"' and uid!='"+uid+"'";
         ResultSet rs=dbUtil.executeQuery(sql);
         //出错标识 0-正常，1-重复手机号，2-重复昵称
-        while (true){
-            try {
-                if (!rs.next()) break;
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
 
-            return 1;
+        try {
+            if (rs.next())return  1;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         sql="select * from users where nickname='"+nickname+"' and uid!='"+uid+"'";
         rs=dbUtil.executeQuery(sql);
-        while (true){
-            try {
-                if (!rs.next()) break;
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-
-            return 2;
+        try {
+            if (rs.next())return  2;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
         sql = "UPDATE users SET "
@@ -87,6 +81,16 @@ public class UserMapperImpl implements UserMapper {
         dbUtil.executeUpdate(sql);
         dbUtil.close();
         return 0;
+    }
+
+    @Override
+    public void updateAvatar(String avatarUrl) {
+        dbUtil.getConnection();
+        Map<String,Object> map= ThreadLocalUtil.get();
+        String uid=(String) map.get("uid");
+        String sql="update users set usr_pic='"+avatarUrl+"' where uid='"+uid+"'";
+        dbUtil.executeUpdate(sql);
+        dbUtil.close();
     }
 
     private Users getUsers(String sql) throws SQLException {
