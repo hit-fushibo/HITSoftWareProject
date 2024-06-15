@@ -93,6 +93,30 @@ public class UserMapperImpl implements UserMapper {
         dbUtil.close();
     }
 
+    @Override
+    public int updatePwd(String oldPwd, String newPwd) {
+        Map<String,Object> map= ThreadLocalUtil.get();
+        String uid= (String) map.get("uid");
+        System.out.println(uid);
+        String sql="select * from users where uid='"+uid+"' and pwd='"+oldPwd+"'";
+        dbUtil.getConnection();
+        ResultSet rs=dbUtil.executeQuery(sql);
+        try {
+            if(rs.next()){
+                sql="update users set pwd='"+newPwd+"'";
+                dbUtil.executeUpdate(sql);
+                dbUtil.close();
+                return 0;
+            }
+            else {
+                dbUtil.close();
+                return 1;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private Users getUsers(String sql) throws SQLException {
         System.out.println(sql);
         String uid;

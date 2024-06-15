@@ -55,45 +55,71 @@
       <button class="add-teacher" onclick="addTeacher()">添加为老师</button>
     </div>
   </div>
-  <div id="process" class="only_reght_column" style="display: none">
+  <div id="process" class="only_reght_column" v-show="showSetting">
     这是申请处理界面
   </div>
-  <div id="setting" class="only_reght_column" style="display: none">
-    <table border="1">
-      <tr>
-        <td>用户UID:</td>
-        <td>{{uid}}</td>
-      </tr>
-      <tr>
-        <td>手机号：</td>
-        <td><input type="text" v-model="phone" id="phone" placeholder="Enter new phone number"></td>
-      </tr>
-      <tr>
-        <td>邮箱：</td>
-        <td><input type="email" v-model="email" id="email" placeholder="Enter new email address"></td>
-      </tr>
-      <tr>
-        <td>姓名：</td>
-        <td><input type="text" v-model="name" id="name" placeholder="Enter new name"></td>
-      </tr>
-      <tr>
-        <td>昵称：</td>
-        <td><input type="text" v-model="nickname" id="nickname" placeholder="Enter new nickname"></td>
-      </tr>
-      <tr>
-        <button id="submitBtn" @click="updateUserInfo">提交修改</button>
-      </tr>
-    </table>
+  <div id="setting" class="only_reght_column" v-show="showSetting">
+    <div>
+      <table border="1">
+        <tr>
+          <td>用户UID:</td>
+          <td>{{uid}}</td>
+        </tr>
+        <tr>
+          <td>手机号：</td>
+          <td><input type="text" v-model="phone" id="phone" placeholder="Enter new phone number"></td>
+        </tr>
+        <tr>
+          <td>邮箱：</td>
+          <td><input type="email" v-model="email" id="email" placeholder="Enter new email address"></td>
+        </tr>
+        <tr>
+          <td>姓名：</td>
+          <td><input type="text" v-model="name" id="name" placeholder="Enter new name"></td>
+        </tr>
+        <tr>
+          <td>昵称：</td>
+          <td><input type="text" v-model="nickname" id="nickname" placeholder="Enter new nickname"></td>
+        </tr>
+        <tr>
+          <button id="submitBtn" @click="updateUserInfo">提交修改</button>
+        </tr>
+      </table>
+    </div>
 
 
 
-    <img :src="pic" alt="个人头像" width="100">
-    <table border="1">
-      <tr>
-        <td>上传新头像：</td>
-        <td><input type="file" id="avatar"></td>
-      </tr>
-    </table>
+
+    <div>
+      <img :src="pic" alt="个人头像" width="100">
+      <table border="1">
+        <tr>
+          <td>上传新头像：</td>
+          <td><input type="file" id="avatar"></td>
+        </tr>
+      </table>
+    </div>
+
+    <div>
+      <table border="1">
+        <tr>
+          <td>原密码</td>
+          <td><input type="text" v-model="originPwd" id="originPwd" placeholder="输入原始密码"></td>
+        </tr>
+        <tr>
+          <td>新密码</td>
+          <td><input type="text" v-model="newPwd" id="newPwd" placeholder="输入新密码"></td>
+        </tr>
+        <tr>
+          <td>确认新密码</td>
+          <td><input type="text" v-model="confirmNewPwd" id="confirmNewPwd" placeholder="确认新密码"></td>
+        </tr>
+        <tr>
+          <button id="submitPwd" @click="updatePwd">提交修改</button>
+        </tr>
+      </table>
+
+    </div>
   </div>
 
 
@@ -116,14 +142,16 @@
       clickProcess(){
         if(this.type!==1){
           this.type=1;
+          processVue.showSetting=true
+          settingVue.showSetting=false
           document.getElementById("graph-container").style.display='none';
           document.getElementById("rightColum").style.display='none';
-          document.getElementById("setting").style.display='none';
-          document.getElementById("process").style.display='block';
+
         }
         else {
           this.type=0;
-          document.getElementById("process").style.display='none';
+          processVue.showSetting=false
+          settingVue.showSetting=false
           document.getElementById("graph-container").style.display='block';
           document.getElementById("rightColum").style.display='block';
         }
@@ -131,14 +159,15 @@
       clickSetting(){
         if(this.type!==2){
           this.type=2;
+          processVue.showSetting=false
+          settingVue.showSetting=true
           document.getElementById("graph-container").style.display='none';
           document.getElementById("rightColum").style.display='none';
-          document.getElementById("process").style.display='none';
-          document.getElementById("setting").style.display='block';
         }
         else {
           this.type=0;
-          document.getElementById("setting").style.display='none';
+          processVue.showSetting=false
+          settingVue.showSetting=false
           document.getElementById("graph-container").style.display='block';
           document.getElementById("rightColum").style.display='block';
         }
@@ -519,7 +548,7 @@
   }
 
   //----------个人设置展示逻辑----------
-  let processVue=new Vue({
+  let settingVue=new Vue({
     el: "#setting",
     data: {
       uid: "",
@@ -528,6 +557,10 @@
       name: "",
       nickname: "",
       pic: "",
+      originPwd:"",
+      newPwd:"",
+      confirmNewPwd:"",
+      showSetting: false
     },
     methods: {
       updateUserInfo(){
@@ -549,6 +582,32 @@
             console.log()
             console.log("成功更新")
             updateUsrInfo();
+          }
+          else {
+            alert(response.data.messages)
+          }
+        })
+
+      },
+      updatePwd(){
+        if(this.newPwd!==this.confirmNewPwd){
+          alert("两次密码不一致");
+          return ;
+        }
+        let jwtToken=sessionStorage.getItem("jwtToken");
+        console.log("更新密码")
+        let userData={
+          old_pwd:this.originPwd,
+          new_pwd:this.newPwd
+        }
+        axios.patch('http://localhost:9090/user/updatePwd',userData,{
+          headers:{
+            'Authorization': jwtToken,
+            'Content-Type': 'application/json'
+          }
+        }).then((response) =>{
+          if(response.data.code===0){
+            console.log("成功更新")
           }
           else {
             alert(response.data.messages)
@@ -577,6 +636,15 @@
         alert("请登录！");
         window.location.href="login.html";
       });
+    }
+  })
+
+
+  //----------处理申请展示逻辑----------
+  let processVue=new Vue({
+    el:"#process",
+    data:{
+      showSetting:false
     }
   })
 </script>

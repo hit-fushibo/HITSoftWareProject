@@ -113,4 +113,17 @@ public class UserController {
         userService.updateAvatar(avatarUrl);
         return Result.success();
     }
+
+
+    @PatchMapping("updatePwd")
+    public Result updatePwd(@RequestBody Map<String,String> params){
+        int flag=userService.updatePwd(params.get("old_pwd"),params.get("new_pwd"));
+        if(flag==0){
+            return Result.success();
+        }
+        else {
+            return Result.error("密码错误");
+        }
+
+    }
 }

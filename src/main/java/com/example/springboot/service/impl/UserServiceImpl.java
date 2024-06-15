@@ -49,4 +49,15 @@ public class UserServiceImpl implements UserService {
     public void updateAvatar(String avatarUrl) {
         userMapper.updateAvatar(avatarUrl);
     }
+
+    @Override
+    public int updatePwd(String oldPwd, String newPwd) {
+        System.out.println(oldPwd);
+        System.out.println(newPwd);
+        String md5OldPwd=MD5Util.encrypt(oldPwd);
+        String md5NewPwd=MD5Util.encrypt(newPwd);
+
+        int flag=userMapper.updatePwd(md5OldPwd,md5NewPwd);
+        return flag;
+    }
 }

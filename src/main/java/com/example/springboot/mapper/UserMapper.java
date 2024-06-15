@@ -18,4 +18,6 @@ public interface UserMapper {
     int update(Users user);
 
     void updateAvatar(String avatarUrl);
+
+    int updatePwd(String oldPwd, String newPwd);
 }

@@ -13,9 +13,12 @@ import java.util.Map;
 public class LoginInterceptors implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+
+        System.out.println("进行检查");
         //放行预检请求
         if ("OPTIONS".equals(request.getMethod()) && request.getHeader("Access-Control-Request-Headers") != null) {
             // Skip Authorization header validation for preflight requests
+            System.out.println("放行预检请求");
             return true;
         }
         //令牌验证
