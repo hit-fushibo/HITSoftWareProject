@@ -8,7 +8,10 @@ import com.example.springboot.utils.MD5Util;
 import com.example.springboot.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -125,5 +128,16 @@ public class UserController {
             return Result.error("密码错误");
         }
 
+    }
+
+
+    @PostMapping("uploadAvatar")
+    public Result<String> uploadAvatar(MultipartFile file) throws IOException {
+        //文件的内容存储到本地磁盘
+        Map<String,Object> map=ThreadLocalUtil.get();
+        String uid= (String) map.get("uid");
+        file.transferTo(new File("D:\\code\\SoftWareProject\\src\\main\\resources\\static\\usr_pic\\"+uid+".png"));
+        String url="\\static\\usr_pic\\"+uid+".png";
+        return Result.success(url);
     }
 }

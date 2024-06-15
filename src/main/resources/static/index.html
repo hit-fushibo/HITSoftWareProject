@@ -95,7 +95,7 @@
       <table border="1">
         <tr>
           <td>上传新头像：</td>
-          <td><input type="file" id="avatar"></td>
+          <td><input type="file" ref="fileInput" @change="uploadAvatar"></td>
         </tr>
       </table>
     </div>
@@ -614,7 +614,31 @@
           }
         })
 
+      },
+      uploadAvatar() {
+        const formData = new FormData();
+        formData.append('avatar', this.$refs.fileInput.files[0]);
+
+        axios.post('http://localhost:9090/user/uploadAvatar', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }).then(response => {
+          // 处理上传成功的逻辑
+          if(response.data.code===0){
+            this.pic = response.data.data;
+            //更新用户头像地址
+          }
+          else {
+            alert(response.data.messages);
+          }
+
+        }).catch(error => {
+          // 处理上传失败的逻辑
+          console.error(error);
+        });
       }
+    }
     },
     created(){
       let jwtToken=sessionStorage.getItem("jwtToken");
