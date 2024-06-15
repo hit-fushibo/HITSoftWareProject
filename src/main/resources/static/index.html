@@ -66,19 +66,19 @@
       </tr>
       <tr>
         <td>手机号：</td>
-        <td><input type="text" id="phone" :value="phone" placeholder="Enter new phone number"></td>
+        <td><input type="text" v-model="phone" id="phone" placeholder="Enter new phone number"></td>
       </tr>
       <tr>
         <td>邮箱：</td>
-        <td><input type="email" id="email" :value="email" placeholder="Enter new email address"></td>
+        <td><input type="email" v-model="email" id="email" placeholder="Enter new email address"></td>
       </tr>
       <tr>
         <td>姓名：</td>
-        <td><input type="text" id="name" :value="name" placeholder="Enter new name"></td>
+        <td><input type="text" v-model="name" id="name" placeholder="Enter new name"></td>
       </tr>
       <tr>
         <td>昵称：</td>
-        <td><input type="text" id="nickname" :value="nickname" placeholder="Enter new nickname"></td>
+        <td><input type="text" v-model="nickname" id="nickname" placeholder="Enter new nickname"></td>
       </tr>
       <tr>
         <button id="submitBtn" @click="updateUserInfo">提交修改</button>
@@ -103,7 +103,7 @@
 
   //----------主界面显示逻辑----------
 
-  let usrInfo=new Vue({
+  let usrInfoVue=new Vue({
     el: "#usrInfo",
     data:{
       type:0,//0-显示tree，1-申请处理，2-个人设置
@@ -163,6 +163,25 @@
       });
     }
   })
+
+  function updateUsrInfo(){
+    let jwtToken=sessionStorage.getItem("jwtToken");
+    // console.log(jwtToken)
+    // 发送GET请求
+    axios.get('http://localhost:9090/user/userinfo', {
+      headers: {
+        'Authorization': jwtToken
+      }
+    }).then(response => {
+      usrInfoVue.uid=response.data.data.uid;
+      usrInfoVue.name=response.data.data.name;
+      usrInfoVue.email=response.data.data.email;
+      usrInfoVue.pic=(response.data.data.usrPic==null||response.data.data.usrPic==="")? "usr_pic/defaultPic.png":response.data.data.usrPic;
+    }).catch(error => {
+      alert("请登录！");
+      window.location.href="login.html";
+    });
+  }
 
   //----------师承树展示逻辑----------
 
@@ -512,7 +531,29 @@
     },
     methods: {
       updateUserInfo(){
-        console.log("updateUserInfo")
+        let jwtToken=sessionStorage.getItem("jwtToken");
+        let userData={
+          uid: this.uid,
+          name: this.name,
+          nickname: this.nickname,
+          phone: this.phone,
+          email: this.email
+        }
+        axios.put('http://localhost:9090/user/update',userData,{
+          headers:{
+            'Authorization': jwtToken,
+            'Content-Type': 'application/json'
+          }
+        }).then((response) =>{
+          if(response.data.code===0){
+            console.log()
+            console.log("成功更新")
+            updateUsrInfo();
+          }
+          else {
+            alert(response.data.messages)
+          }
+        })
 
       }
     },
@@ -531,7 +572,6 @@
         this.email=response.data.data.email;
         this.nickname=response.data.data.nickname;
         this.pic=(response.data.data.usrPic==null||response.data.data.usrPic==="")? "usr_pic/defaultPic.png":response.data.data.usrPic;
-
 
       }).catch(error => {
         alert("请登录！");
