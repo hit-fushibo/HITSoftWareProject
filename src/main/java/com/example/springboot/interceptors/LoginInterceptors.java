@@ -13,8 +13,9 @@ import java.util.Map;
 public class LoginInterceptors implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
+        String requestUrl = request.getRequestURL().toString();
         System.out.println("进行检查");
+        System.out.println("访问的url:"+requestUrl);
         //放行预检请求
         if ("OPTIONS".equals(request.getMethod()) && request.getHeader("Access-Control-Request-Headers") != null) {
             // Skip Authorization header validation for preflight requests

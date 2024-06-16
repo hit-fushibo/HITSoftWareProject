@@ -16,20 +16,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         //登录和注册不拦截
-        registry.addInterceptor(loginInterceptors).excludePathPatterns("/user/login","/user/register","/hello","test/**","/static/**");
-    }
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("http://localhost:63342")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowCredentials(true)
-                .allowedHeaders("*");
-    }
-
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("static/**")
-                .addResourceLocations("D:\\code\\SoftWareProject\\src\\main\\resources\\static");
+        registry.addInterceptor(loginInterceptors).excludePathPatterns("/user/login","/user/register");
     }
 }
