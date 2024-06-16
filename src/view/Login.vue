@@ -2,8 +2,9 @@
 import { User, Lock } from "@element-plus/icons-vue"
 import { reactive, ref } from 'vue'
 import type { ComponentSize, FormInstance, FormRules } from 'element-plus'
+import {useRouter} from 'vue-router'
 //控制注册和登录表单显示
-const isRegister = ref(false)
+let isRegister = ref(false)
 //绑定数据
 const login_id = ref("")
 const login_pwd = ref("")
@@ -75,7 +76,7 @@ const loginRules = reactive<FormRules<loginRuleForm>>({
 })
 
 
-import {userRegisterService} from "@/api/user.js"
+import {userRegisterService,userLoginService} from "@/api/user.js"
 
 const singUp = async () => {
     let phone = singUp_phone.value
@@ -101,8 +102,13 @@ const singUp = async () => {
     }
     else {
         alert("注册成功")
+        login_id.value=phone
+        login_pwd.value=pwd
+        isRegister.value=false
     }
 }
+
+const router = useRouter();
 
 const login = async ()=>{
     let id = login_id.value
@@ -127,12 +133,14 @@ const login = async ()=>{
         password:pwd,
         pori:pori
     }
-    let response = await userRegisterService(loginData)
+    let response = await userLoginService(loginData)
     if(response.code!==0){
         alert(response.message);
     }
     else {
-        alert("登录成功")
+        //借助路由完成跳转
+        sessionStorage.setItem('jwtToken',response.data)
+        router.push('/')
     }
     
 }
