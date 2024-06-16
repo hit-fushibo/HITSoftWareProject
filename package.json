@@ -10,11 +10,14 @@
   },
   "dependencies": {
     "axios": "^1.7.2",
+    "d3": "^7.9.0",
     "element-plus": "^2.7.5",
-    "vue": "^3.4.21"
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
+    "sass": "^1.77.5",
     "vite": "^5.2.8"
   }
 }
