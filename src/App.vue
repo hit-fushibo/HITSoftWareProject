@@ -1,6 +1,5 @@
 <script setup>
-  import buttonVue from "./button.vue"
-  import requestTable from "./requestProcess.vue"
+  import requestTable from "./view/requestProcess.vue"
 </script>
 
 <template>
