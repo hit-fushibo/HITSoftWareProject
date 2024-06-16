@@ -104,16 +104,15 @@ const singUp = async () => {
     }
 }
 
-
-function login() {
+const login = async ()=>{
     let id = login_id.value
     let pwd = login_pwd.value
     let pori = 0
     if (id.length === 11) {
-        pori = 1
+        pori = 0
     }
     else if (id.length === 9) {
-        pori = 0
+        pori = 1
     }
     else {
         alert("登录id只能为9位uid或11位手机号")
@@ -123,9 +122,19 @@ function login() {
         alert("请输入密码")
         return
     }
+    let loginData={
+        id:id,
+        password:pwd,
+        pori:pori
+    }
+    let response = await userRegisterService(loginData)
+    if(response.code!==0){
+        alert(response.message);
+    }
+    else {
+        alert("登录成功")
+    }
     
-    console.log("登录成功：id：", id, " pwd:", pwd, " pori:", pori)
-
 }
 
 </script>
