@@ -132,7 +132,7 @@ const onSubmit = () => {
 //获取申请信息
 tableData.value = getRequestData();
 filterDataQuery();
-updateDisplayData(tableData);
+updateDisplayData();
 </script>
 
 
