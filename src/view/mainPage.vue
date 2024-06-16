@@ -16,10 +16,43 @@ import { ref } from "vue"
 
 const name = ref('default name')
 
-let teachers=ref([])
-let students=ref([])
-let me=ref({})
-let isMe=ref(true)
+let teachers = ref([])
+let students = ref([])
+let me = ref({})
+let isMe = ref(true)
+
+//dropDown条目被点击后，回调的函数
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const handleCommand = (command) => {
+    if (command === 'logout') {
+        //退出登录
+        ElMessageBox.confirm(
+            '你确认退出登录码？ ',
+            '温馨提示',
+            {
+                confirmButtonText: '确认',
+                cancelButtonText: '取消',
+                type: 'warning',
+            }
+        ).then(async () => {
+            //用户点击了确认
+            //清空pinia中的token和个人信息
+            //跳转到登录页
+            router.push('/login')
+        }).catch(() => {
+            //用户点击了取消
+            ElMessage({
+                type: 'info',
+                message: '取消退出',
+            })
+        })
+    } else {
+        //路由
+        router.push('/user/' + command)
+    }
+}
 
 </script>
 <template>
@@ -73,7 +106,7 @@ let isMe=ref(true)
             <!-- 头部区域 -->
             <el-header>
                 <div>您好： <strong>{{ name }}</strong></div>
-                <el-dropdown placement="bottom-end">
+                <el-dropdown placement="bottom-end" @command="handleCommand">
                     <span class="el-dropdown__box">
                         <el-avatar :src="avatar" />
                         <el-icon>
@@ -82,8 +115,8 @@ let isMe=ref(true)
                     </span>
                     <template #dropdown>
                         <el-dropdown-menu>
-                            <el-dropdown-item command="profile" :icon="User">基本资料</el-dropdown-item>
-                            <el-dropdown-item command="avatar" :icon="Crop">更换头像</el-dropdown-item>
+                            <el-dropdown-item command="setting" :icon="User">基本资料</el-dropdown-item>
+                            <el-dropdown-item command="avatarUpload" :icon="Crop">更换头像</el-dropdown-item>
                             <el-dropdown-item command="password" :icon="EditPen">重置密码</el-dropdown-item>
                             <el-dropdown-item command="logout" :icon="SwitchButton">退出登录</el-dropdown-item>
                         </el-dropdown-menu>
