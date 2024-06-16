@@ -12,6 +12,8 @@
     "axios": "^1.7.2",
     "d3": "^7.9.0",
     "element-plus": "^2.7.5",
+    "pinia": "^2.1.7",
+    "pinia-persistedstate-plugin": "^0.1.0",
     "vue": "^3.4.21",
     "vue-router": "^4.3.3"
   },
