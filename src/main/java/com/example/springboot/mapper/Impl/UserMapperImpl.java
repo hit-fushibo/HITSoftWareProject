@@ -55,6 +55,7 @@ public class UserMapperImpl implements UserMapper {
         String email= user.getEmail();
         String name= user.getName();
         String nickname= user.getNickname();
+        String myPage=user.getMyPage();
         String sql ="select * from users where phone='"+phone+"' and uid!='"+uid+"'";
         ResultSet rs=dbUtil.executeQuery(sql);
         //出错标识 0-正常，1-重复手机号，2-重复昵称
@@ -76,8 +77,10 @@ public class UserMapperImpl implements UserMapper {
                 + "phone = '" + phone + "', "
                 + "email = '" + email + "', "
                 + "name = '" + name + "', "
-                + "nickname = '" + nickname + "' "
+                + "nickname = '" + nickname + "',"
+                + "mypage = '" + myPage + "' "
                 + "WHERE uid = '" + uid + "'";
+        System.out.println(sql);
         dbUtil.executeUpdate(sql);
         dbUtil.close();
         return 0;
@@ -126,6 +129,7 @@ public class UserMapperImpl implements UserMapper {
         String name;
         String nickname;
         String usrPic;
+        String myPage;
         dbUtil.getConnection();
         try (ResultSet rs = dbUtil.executeQuery(sql)) {
             uid = "";
@@ -135,6 +139,7 @@ public class UserMapperImpl implements UserMapper {
             name = "";
             nickname = "";
             usrPic = "";
+            myPage="";
 
             while (rs.next()) {
                 uid = rs.getString("uid");
@@ -144,12 +149,13 @@ public class UserMapperImpl implements UserMapper {
                 name = rs.getString("name");
                 nickname = rs.getString("nickname");
                 usrPic = rs.getString("usr_pic");
+                myPage=rs.getString("mypage");
             }
         }
         if(Objects.equals(uid, "")){
             return null;
         }
         dbUtil.close();
-        return new Users(uid,pwd,phone,email,name,nickname,usrPic);
+        return new Users(uid,pwd,phone,email,name,nickname,usrPic,myPage);
     }
 }
