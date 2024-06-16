@@ -75,8 +75,9 @@ const loginRules = reactive<FormRules<loginRuleForm>>({
 })
 
 
+import {userRegisterService} from "@/api/user.js"
 
-function singUp() {
+const singUp = async () => {
     let phone = singUp_phone.value
     let pwd = singUp_pwd.value
     let pwd_confirm = singUp_pwd_confirm.value
@@ -89,9 +90,20 @@ function singUp() {
         alert("两次密码需要相同")
         return
     }
-    console.log("注册成功：phone：", phone, " pwd:", pwd)
-
+    let registerData={
+        userPhone:phone,
+        password:pwd
+    }
+    console.log(registerData)
+    let response = await userRegisterService(registerData)
+    if(response.code!==0){
+        alert(response.message);
+    }
+    else {
+        alert("注册成功")
+    }
 }
+
 
 function login() {
     let id = login_id.value
@@ -111,6 +123,7 @@ function login() {
         alert("请输入密码")
         return
     }
+    
     console.log("登录成功：id：", id, " pwd:", pwd, " pori:", pori)
 
 }
@@ -118,61 +131,65 @@ function login() {
 </script>
 
 <template>
-    <el-row class="login-page">
-        <el-col :span="12" class="bg"></el-col>
-        <el-col :span="6" :offset="3" class="form">
-            <!-- 注册表单 -->
-            <el-form ref="from" size="large" autocomplete="off" v-if="isRegister">
-                <el-form-item>
-                    <h1>注册</h1>
-                </el-form-item>
-                <el-form-item>
-                    <el-input :prefix-icon="User" v-model="singUp_phone" placeholder="请输入手机号"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-input :prefix-icon="Lock" v-model="singUp_pwd" placeholder="请输入密码"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-input :prefix-icon="Lock" v-model="singUp_pwd_confirm" placeholder="请再次输入密码"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-button class="button" type="primary" auto-insert-space @click="singUp">
-                        注册
-                    </el-button>
-                </el-form-item>
-                <el-form-item>
-                    <el-link type="info" :underline="true" @click="isRegister = false">
-                        返回
-                    </el-link>
-                </el-form-item>
-            </el-form>
+    <div>
+        <el-row class="login-page">
+            <el-col :span="12" class="bg"></el-col>
+            <el-col :span="6" :offset="3" class="form">
+                <!-- 注册表单 -->
+                <el-form ref="from" size="large" autocomplete="off" v-if="isRegister">
+                    <el-form-item>
+                        <h1>注册</h1>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-input :prefix-icon="User" v-model="singUp_phone" placeholder="请输入手机号"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-input :prefix-icon="Lock" v-model="singUp_pwd" placeholder="请输入密码"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-input :prefix-icon="Lock" v-model="singUp_pwd_confirm" placeholder="请再次输入密码"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button class="button" type="primary" auto-insert-space @click="singUp">
+                            注册
+                        </el-button>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-link type="info" :underline="true" @click="isRegister = false">
+                            返回
+                        </el-link>
+                    </el-form-item>
+                </el-form>
 
-            <!-- 登录表单 -->
-            <el-form ref="from" size="large" autocomplete="off" v-if="!isRegister">
-                <el-form-item>
-                    <h1>登录</h1>
-                </el-form-item>
-                <el-form-item>
-                    <el-input :prefix-icon="User" v-model="login_id" placeholder="请输入uid/手机号"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-input :prefix-icon="Lock" v-model="login_pwd" placeholder="请输入密码"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-button class="button" type="primary" auto-insert-space @click="login">
-                        登录
-                    </el-button>
-                </el-form-item>
-                <el-form-item>
-                    <el-link type="info" :underline="true" @click="isRegister = true">
-                        注册
-                    </el-link>
-                </el-form-item>
-            </el-form>
-        </el-col>
+                <!-- 登录表单 -->
+                <el-form ref="from" size="large" autocomplete="off" v-if="!isRegister">
+                    <el-form-item>
+                        <h1>登录</h1>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-input :prefix-icon="User" v-model="login_id" placeholder="请输入uid/手机号"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-input :prefix-icon="Lock" v-model="login_pwd" placeholder="请输入密码"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button class="button" type="primary" auto-insert-space @click="login">
+                            登录
+                        </el-button>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-link type="info" :underline="true" @click="isRegister = true">
+                            注册
+                        </el-link>
+                    </el-form-item>
+                </el-form>
+            </el-col>
 
 
-    </el-row>
+        </el-row>
+
+    </div>
+
 
 
 </template>

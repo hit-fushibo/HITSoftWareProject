@@ -2,7 +2,7 @@
 
 import axios from "axios";
 
-const baseURL="http://localhost:9090"
+const baseURL="/api"
 const instance=axios.create({baseURL})
 
 instance.interceptors.response.use(
