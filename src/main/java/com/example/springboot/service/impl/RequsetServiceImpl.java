@@ -30,4 +30,15 @@ public class RequsetServiceImpl implements RequestService {
     public int addOthersTeacher(String who, String addUid, String level, String startTime, String endTime) {
         return requestMapper.addOthersTeacher(who,addUid,level,startTime,endTime);
     }
+
+    @Override
+    public int delMyStudent(String delUid) {
+        return requestMapper.delMyStudent(delUid);
+    }
+
+    @Override
+    public int delMyTeacher(String delUid) {
+        return requestMapper.delMyTeacher(delUid);
+
+    }
 }

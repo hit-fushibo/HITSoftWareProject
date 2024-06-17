@@ -76,4 +76,27 @@ public class RequestController {
             return Result.error("不能添加其学生为其老师");
         }
     }
+
+    @PostMapping("/delMyStudent")
+    public Result delMyStudent(String delUid){
+        int flag= requestService.delMyStudent(delUid);
+        if(flag==0){
+            return Result.success();
+        }
+        else {
+            return Result.error("已经有相同操作");
+        }
+
+    }
+
+    @PostMapping("/delMyTeacher")
+    public Result delMyTeacher(String delUid){
+        int flag = requestService.delMyTeacher(delUid);
+        if(flag==0){
+            return Result.success();
+        }
+        else {
+            return Result.error("已经有相同操作");
+        }
+    }
 }

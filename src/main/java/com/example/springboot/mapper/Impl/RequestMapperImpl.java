@@ -261,4 +261,83 @@ public class RequestMapperImpl implements RequestMapper {
         dbUtil.close();
         return 0;
     }
+
+    @Override
+    public int delMyStudent(String delUid) {
+        dbUtil.getConnection();
+        Map<String,Object> map= ThreadLocalUtil.get();
+        String uid=(String) map.get("uid");
+        //检查是否有同样作用的请求，自己已经申请过或者别人给自己申请过
+        //检查自己的请求中是否有同样的请求
+        String  sql="select * from request where uid='"+delUid+"' and from_uid='"+uid+"' and to_uid='"+uid+"' and rtype='001'";
+        ResultSet rs=dbUtil.executeQuery(sql);
+        try {
+            if(rs.next()){
+                dbUtil.close();
+
+                return 1;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        //检查他人对其的修改请求中是否有同样的请求
+        sql="select * from request where uid='"+uid+"' and to_uid='"+delUid+"' and rtype='101'";
+        rs=dbUtil.executeQuery(sql);
+        try {
+            if(rs.next()){
+                dbUtil.close();
+                return 1;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        //请求没有问题，添加请求
+
+        String rid= TimeStamp.getTimeStamp();
+        String rType="001";
+        sql="insert into request (rid,uid,from_uid,to_uid,rtype) " +
+                "values ('"+rid+"','"+delUid+"','"+uid+"','"+uid+"','"+rType+"')";
+        dbUtil.executeUpdate(sql);
+        dbUtil.close();
+        return 0;
+    }
+
+    @Override
+    public int delMyTeacher(String delUid) {
+        dbUtil.getConnection();
+        Map<String,Object> map= ThreadLocalUtil.get();
+        String uid=(String) map.get("uid");
+        //检查是否有同样作用的请求，自己已经申请过或者别人给自己申请过
+        //检查自己的请求中是否有同样的请求
+        String  sql="select * from request where uid='"+delUid+"' and from_uid='"+uid+"' and to_uid='"+uid+"' and rtype='002'";
+        ResultSet rs=dbUtil.executeQuery(sql);
+        try {
+            if(rs.next()){
+                dbUtil.close();
+
+                return 1;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        //检查他人对其的修改请求中是否有同样的请求
+        sql="select * from request where uid='"+uid+"' and to_uid='"+delUid+"' and rtype='102'";
+        rs=dbUtil.executeQuery(sql);
+        try {
+            if(rs.next()){
+                dbUtil.close();
+                return 1;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        //请求没有问题，添加请求
+        String rid= TimeStamp.getTimeStamp();
+        String rType="002";
+        sql="insert into request (rid,uid,from_uid,to_uid,rtype) " +
+                "values ('"+rid+"','"+delUid+"','"+uid+"','"+uid+"','"+rType+"')";
+        dbUtil.executeUpdate(sql);
+        dbUtil.close();
+        return 0;
+    }
 }
