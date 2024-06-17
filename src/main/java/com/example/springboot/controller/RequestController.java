@@ -1,12 +1,18 @@
 package com.example.springboot.controller;
 
 
+import com.example.springboot.mapper.TreeMapper;
+import com.example.springboot.mapper.UserMapper;
+import com.example.springboot.pojo.Requests;
 import com.example.springboot.pojo.Result;
 import com.example.springboot.service.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/requests")
@@ -122,4 +128,35 @@ public class RequestController {
             return Result.error("已经有相同操作");
         }
     }
+
+    @PostMapping("/modifyMyTree")
+    public Result modifyMyTree(String modifyUid,String level,String startTime,String endTime){
+        int flag= requestService.modifyMyTree(modifyUid,level,startTime,endTime);
+        if(flag==0){
+            return Result.success();
+        }
+        else {
+            return Result.error("已经有相同操作");
+        }
+    }
+
+    @PostMapping("/modifyOthersTree")
+    public Result modifyOthersTree(String who,String modifyUid,String level,String startTime,String endTime){
+        int flag=requestService.modifyOthersTree(who,modifyUid,level,startTime,endTime);
+        if(flag==0){
+            return Result.success();
+        }
+        else {
+            return Result.error("已经有相同操作");
+        }
+    }
+
+    @GetMapping("/getAllRequests")
+    public Result<ArrayList<Requests>> getAllRequests(){
+        ArrayList<Requests> r=requestService.getAllRequests();
+        return Result.success(r);
+
+    }
+
+
 }

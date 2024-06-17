@@ -2,11 +2,15 @@ package com.example.springboot.service.impl;
 
 import com.example.springboot.mapper.RequestMapper;
 import com.example.springboot.mapper.TreeMapper;
+import com.example.springboot.mapper.UserMapper;
+import com.example.springboot.pojo.Requests;
+import com.example.springboot.pojo.Users;
 import com.example.springboot.service.RequestService;
 import com.example.springboot.utils.ThreadLocalUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 @Service
@@ -17,6 +21,9 @@ public class RequsetServiceImpl implements RequestService {
 
     @Autowired
     private TreeMapper treeMapper;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
     public int addMyStudent(String addUid, String level, String startTime, String endTime) {
@@ -93,6 +100,32 @@ public class RequsetServiceImpl implements RequestService {
     @Override
     public int delOthersTeacher(String who, String delUid,String level) {
         return requestMapper.delOthersTeacher(who,delUid,level);
+    }
+
+    @Override
+    public int modifyMyTree(String modifyUid, String level, String startTime, String endTime) {
+        return requestMapper.modifyMyTree(modifyUid,level,startTime,endTime);
+    }
+
+    @Override
+    public int modifyOthersTree(String who, String modifyUid, String level, String startTime, String endTime) {
+        return requestMapper.modifyOthersTree(who,modifyUid,level,startTime,endTime);
+    }
+
+    @Override
+    public ArrayList<Requests> getAllRequests() {
+        ArrayList<Requests> requests= requestMapper.getAllRequests();
+        //解析 fromName toName description
+        for(Requests r:requests){
+            String uid=r.getFromUid();
+            Users u= userMapper.findByUid(uid);
+            r.setFromName(u.getName());
+            uid=r.getToUid();
+            u= userMapper.findByUid(uid);
+            r.setToName(u.getName());
+            r.genDescription();
+        }
+        return requests;
     }
 
 }

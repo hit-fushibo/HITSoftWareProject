@@ -1,14 +1,17 @@
 package com.example.springboot.mapper.Impl;
 
 import com.example.springboot.mapper.RequestMapper;
+import com.example.springboot.pojo.Requests;
 import com.example.springboot.utils.DBUtil;
 import com.example.springboot.utils.ThreadLocalUtil;
 import com.example.springboot.utils.TimeStamp;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Map;
 
 @Component
@@ -123,8 +126,8 @@ public class RequestMapperImpl implements RequestMapper {
 
         String rid= TimeStamp.getTimeStamp();
         String rType="001";
-        String sql="insert into request (rid,uid,from_uid,to_uid,rtype) " +
-                "values ('"+rid+"','"+delUid+"','"+uid+"','"+uid+"','"+rType+"')";
+        String sql="insert into request (rid,uid,from_uid,to_uid,rtype,level) " +
+                "values ('"+rid+"','"+delUid+"','"+uid+"','"+uid+"','"+rType+"','"+level+"')";
         dbUtil.executeUpdate(sql);
         dbUtil.close();
         return 0;
@@ -143,8 +146,8 @@ public class RequestMapperImpl implements RequestMapper {
         //请求没有问题，添加请求
         String rid= TimeStamp.getTimeStamp();
         String rType="002";
-        String  sql="insert into request (rid,uid,from_uid,to_uid,rtype) " +
-                "values ('"+rid+"','"+delUid+"','"+uid+"','"+uid+"','"+rType+"')";
+        String  sql="insert into request (rid,uid,from_uid,to_uid,rtype,level) " +
+                "values ('"+rid+"','"+delUid+"','"+uid+"','"+uid+"','"+rType+"','"+level+"')";
         dbUtil.executeUpdate(sql);
         dbUtil.close();
         return 0;
@@ -163,8 +166,8 @@ public class RequestMapperImpl implements RequestMapper {
 
         String rid= TimeStamp.getTimeStamp();
         String rType="101";
-        String  sql="insert into request (rid,uid,from_uid,to_uid,rtype) " +
-                "values ('"+rid+"','"+who+"','"+uid+"','"+delUid+"','"+rType+"')";
+        String  sql="insert into request (rid,uid,from_uid,to_uid,rtype,level) " +
+                "values ('"+rid+"','"+who+"','"+uid+"','"+delUid+"','"+rType+"','"+level+"')";
         dbUtil.executeUpdate(sql);
         dbUtil.close();
         return 0;
@@ -183,11 +186,94 @@ public class RequestMapperImpl implements RequestMapper {
 
         String rid= TimeStamp.getTimeStamp();
         String rType="102";
-        String sql="insert into request (rid,uid,from_uid,to_uid,rtype) " +
-                "values ('"+rid+"','"+who+"','"+uid+"','"+delUid+"','"+rType+"')";
+        String sql="insert into request (rid,uid,from_uid,to_uid,rtype,level) " +
+                "values ('"+rid+"','"+who+"','"+uid+"','"+delUid+"','"+rType+"','"+level+"')";
         dbUtil.executeUpdate(sql);
         dbUtil.close();
         return 0;
+    }
+
+    @Override
+    public int modifyMyTree(String modifyUid, String level, String startTime, String endTime) {
+        dbUtil.getConnection();
+        Map<String,Object> map= ThreadLocalUtil.get();
+        String uid=(String) map.get("uid");
+        //检查是否有同样作用的请求，自己已经申请过或者别人给自己申请过
+        if(isRepeatOfOthersRequest(uid,modifyUid,"20",level)==1){
+            return 1;
+        }
+        //请求没有问题，添加请求
+
+        String rid= TimeStamp.getTimeStamp();
+        String rType="020";
+        String sql="insert into request (rid,uid,from_uid,to_uid,rtype,level,start_time,end_time) " +
+                "values ('"+rid+"','"+modifyUid+"','"+uid+"','"+uid+"','"+rType+"','"+level+"','"+startTime+"','"+endTime+"')";
+        dbUtil.executeUpdate(sql);
+        dbUtil.close();
+        return 0;
+    }
+
+    @Override
+    public int modifyOthersTree(String who, String modifyUid, String level, String startTime, String endTime) {
+        dbUtil.getConnection();
+        Map<String,Object> map= ThreadLocalUtil.get();
+        String uid=(String) map.get("uid");
+        //检查是否有同样作用的请求，其已经申请过或者别人给其申请过
+        if(isRepeatOfOthersRequest(who,modifyUid,"20",level)==1){
+            return 1;
+        }
+        //请求没有问题，添加请求
+
+        String rid= TimeStamp.getTimeStamp();
+        String rType="120";
+        String sql="insert into request (rid,uid,from_uid,to_uid,rtype,level,start_time,end_time) " +
+                "values ('"+rid+"','"+who+"','"+uid+"','"+modifyUid+"','"+rType+"','"+level+"','"+startTime+"','"+endTime+"')";
+        dbUtil.executeUpdate(sql);
+        dbUtil.close();
+        return 0;
+    }
+
+    @Override
+    public ArrayList<Requests> getAllRequests() {
+        Map<String,Object> map= ThreadLocalUtil.get();
+        String uid=(String) map.get("uid");
+        ArrayList<Requests> requests=new ArrayList<>();
+        dbUtil.getConnection();
+        String sql="select * from request where uid='"+uid+"'";
+        try (ResultSet rs = dbUtil.executeQuery(sql)) {
+            String rid;
+            String fromUid;
+            String fromName;
+            String toUid;
+            String toName;
+            String level;
+            String meRoOthers;//0-对自己树的申请，1-对他人树的申请
+            String type;//0-删除，1-增加，2-修改
+            String sOrt;//0-学生，1-老师
+            String startTime;
+            String endTime;
+            String description;
+            while (rs.next()) {
+                rid=rs.getString("rid");
+                fromUid=rs.getString("from_uid");
+                fromName="";
+                toUid=rs.getString("to_uid");
+                toName="";
+                level=rs.getString("level");
+                String rtype=rs.getString("rtype");
+                meRoOthers=String.valueOf(rtype.charAt(0));
+                type=String.valueOf(rtype.charAt(1));
+                sOrt=String.valueOf(rtype.charAt(2));
+                startTime=rs.getString("start_time");
+                endTime=rs.getString("end_time");
+
+                requests.add(new Requests(rid,fromUid,fromName,toUid,toName,level,meRoOthers,type,sOrt,startTime,endTime,""));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return requests;
     }
 
     public int isRepeatOfMyRequest(String toUid,String type,String level){
