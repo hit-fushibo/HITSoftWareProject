@@ -6,7 +6,8 @@ import java.util.ArrayList;
 
 public interface TreeMapper {
 
-    public boolean IsTeacherOfWhomInLevel(String tUid,String sUid,String level);
+    boolean IsTeacherOfWhomInLevel(String tUid,String sUid,String level);
+    boolean IsTeacherOfWhomInAnyLevel(String tUid,String sUid);
 
     ArrayList<Node> getTree(String uid);
     

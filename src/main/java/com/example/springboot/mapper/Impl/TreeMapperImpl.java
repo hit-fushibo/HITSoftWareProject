@@ -24,11 +24,33 @@ public class TreeMapperImpl implements TreeMapper {
         ResultSet rs=dbUtil.executeQuery(sql);
         try {
             if(rs.next()){
+                dbUtil.close();
                 return true;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+        dbUtil.close();
+        return false;
+    }
+
+    @Override
+    public boolean IsTeacherOfWhomInAnyLevel(String tUid, String sUid) {
+        dbUtil.getConnection();
+        String sql="select * from tree where teacher_uid='"+tUid+"' and student_uid='"+sUid+"'";
+        try (ResultSet rs = dbUtil.executeQuery(sql)) {
+            try {
+                if (rs.next()) {
+                    dbUtil.close();
+                    return true;
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        dbUtil.close();
         return false;
     }
 
@@ -64,7 +86,7 @@ public class TreeMapperImpl implements TreeMapper {
         }
 
         nodes.add(new Node(uid,"0","",""));
-
+        dbUtil.close();
         return nodes;
     }
 
