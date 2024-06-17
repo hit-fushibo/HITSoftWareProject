@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 @Component
@@ -118,6 +119,42 @@ public class UserMapperImpl implements UserMapper {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public ArrayList<Users> findByName(String id) {
+        ArrayList<Users> u=new ArrayList<>();
+        dbUtil.getConnection();
+        String sql="select * from users where name='"+id+"'";
+        ResultSet rs=dbUtil.executeQuery(sql);
+        String uid;
+        String pwd;
+        String phone;
+        String email;
+        String name;
+        String nickname;
+        String usrPic;
+        String myPage;
+        while (true){
+            try {
+                if (!rs.next()) break;
+                uid = rs.getString("uid");
+                pwd = rs.getString("pwd");
+                phone = rs.getString("phone");
+                email = rs.getString("email");
+                name = rs.getString("name");
+                nickname = rs.getString("nickname");
+                usrPic = rs.getString("usr_pic");
+                myPage=rs.getString("mypage");
+                Users user=new Users(uid,pwd,phone,email,name,nickname,usrPic,myPage);
+                u.add(user);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+
+        return u;
     }
 
     private Users getUsers(String sql) throws SQLException {

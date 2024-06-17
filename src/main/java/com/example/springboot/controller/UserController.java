@@ -12,8 +12,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/user")
@@ -72,7 +74,7 @@ public class UserController {
     }
 
     @GetMapping("/userinfo")
-    public Result<Users> userInfo(@RequestHeader(name="Authorization")String token){
+    public Result<Users> userInfo(){
         //根据用户名查询用户
 
         // 优化：在拦截器中解析了token，在这里使用解析结果，
@@ -84,6 +86,28 @@ public class UserController {
         System.out.println("用户获取用户信息");
         Users user=userService.findByUid(uid);
         return Result.success(user);
+    }
+
+
+    @PostMapping("/searchUsers")
+    public Result searchUsers(String id,String type){
+        ArrayList<Users> u=new ArrayList<>();
+        System.out.println(id);
+        System.out.println(type);
+        if(Objects.equals(type, "0")){
+            u=userService.findByName(id);
+        } else if (Objects.equals(type, "1")) {
+            Users user=userService.findByUid(id);
+            u.add(user);
+        } else if (Objects.equals(type, "2")) {
+            Users user=userService.findByPhone(id);
+            u.add(user);
+        }
+        else {
+            return Result.error("type字段不符合要求");
+        }
+
+        return Result.success(u);
     }
 
     @PutMapping("/update")

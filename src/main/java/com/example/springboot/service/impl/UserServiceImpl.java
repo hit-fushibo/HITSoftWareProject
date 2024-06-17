@@ -8,6 +8,8 @@ import com.example.springboot.utils.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
@@ -59,5 +61,12 @@ public class UserServiceImpl implements UserService {
 
         int flag=userMapper.updatePwd(md5OldPwd,md5NewPwd);
         return flag;
+    }
+
+    @Override
+    public ArrayList<Users> findByName(String id) {
+        ArrayList<Users> u=userMapper.findByName(id);
+
+        return u;
     }
 }

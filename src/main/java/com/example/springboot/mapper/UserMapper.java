@@ -2,6 +2,8 @@ package com.example.springboot.mapper;
 
 import com.example.springboot.pojo.Users;
 
+import java.util.ArrayList;
+
 //@Mapper
 public interface UserMapper {
 
@@ -20,4 +22,6 @@ public interface UserMapper {
     void updateAvatar(String avatarUrl);
 
     int updatePwd(String oldPwd, String newPwd);
+
+    ArrayList<Users> findByName(String id);
 }
