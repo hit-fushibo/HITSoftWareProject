@@ -14,6 +14,9 @@ public class Requests {
     private String toUid;
     private String toName;
     private String level;
+
+    @JsonIgnore
+    private String uid;
     @JsonIgnore
     private String  meRoOthers;//0-对自己树的申请，1-对他人树的申请
     @JsonIgnore
@@ -39,6 +42,21 @@ public class Requests {
         this.startTime = startTime;
         this.endTime = endTime;
         this.description = description;
+    }
+    public Requests(String rid, String fromUid, String fromName, String toUid, String toName, String level, String meRoOthers, String type, String sOrt, String startTime, String endTime, String description,String uid) {
+        this.rid = rid;
+        this.fromUid = fromUid;
+        this.fromName = fromName;
+        this.toUid = toUid;
+        this.toName = toName;
+        this.level = level;
+        this.meRoOthers = meRoOthers;
+        this.type = type;
+        this.sOrt = sOrt;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.description = description;
+        this.uid=uid;
     }
 
     public void genDescription(){

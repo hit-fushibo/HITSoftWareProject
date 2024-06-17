@@ -27,4 +27,8 @@ public interface RequestService {
     int modifyOthersTree(String who, String modifyUid, String level, String startTime, String endTime);
 
     ArrayList<Requests> getAllRequests();
+
+    void refuseRequest(String rid);
+
+    void acceptRequest(String rid);
 }

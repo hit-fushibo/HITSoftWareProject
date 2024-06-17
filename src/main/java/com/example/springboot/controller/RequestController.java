@@ -151,11 +151,24 @@ public class RequestController {
         }
     }
 
+    @PostMapping("/acceptRequest")
+    public Result acceptRequest(String rid){
+        requestService.acceptRequest(rid);
+
+        return Result.success();
+    }
+
+    @PostMapping("/refuseRequest")
+    public Result refuseRequest(String rid){
+        requestService.refuseRequest(rid);
+
+        return Result.success();
+    }
+
     @GetMapping("/getAllRequests")
     public Result<ArrayList<Requests>> getAllRequests(){
         ArrayList<Requests> r=requestService.getAllRequests();
         return Result.success(r);
-
     }
 
 

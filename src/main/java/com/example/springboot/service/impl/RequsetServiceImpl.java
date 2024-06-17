@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class RequsetServiceImpl implements RequestService {
@@ -126,6 +127,71 @@ public class RequsetServiceImpl implements RequestService {
             r.genDescription();
         }
         return requests;
+    }
+
+    @Override
+    public void refuseRequest(String rid) {
+        requestMapper.refuseRequest(rid);
+    }
+
+    @Override
+    public void acceptRequest(String rid) {
+        Requests request=requestMapper.acceptRequest(rid);
+        String uid=request.getUid();
+        String fromUid=request.getFromUid();
+        String toUid=request.getToUid();
+        String meRoOthers=request.getMeRoOthers();
+        String type=request.getType();
+        String sOrt=request.getSOrt();
+        String tid;
+        String sid;
+        String level=request.getLevel();
+        String startTime=request.getStartTime();
+        String endTime=request.getEndTime();
+        //根据request中的内容修改tree表
+        if(Objects.equals(meRoOthers, "0")){
+            if(Objects.equals(type, "0")){
+                if(Objects.equals(sOrt, "0")){
+                    //删除自己的学生
+                    tid=request.getFromUid();
+                    sid=request.getUid();
+
+                }
+                else {
+                    //删除自己的老师
+                    sid=request.getFromUid();
+                    tid=request.getUid();
+                }
+                treeMapper.del(tid,sid,level);
+
+            } else if (Objects.equals(type, "1")) {
+                if(Objects.equals(sOrt, "0")){
+                    //增加自己老师
+                    tid=request.getFromUid();
+                    sid=request.getUid();
+                }
+                else {
+                    //增加自己的老师
+                    sid=request.getFromUid();
+                    tid=request.getUid();
+                }
+                treeMapper.add(tid,sid,level,startTime,endTime);
+            }else {
+                //修改自己树结点
+                tid=request.getFromUid();
+                sid=request.getUid();
+                if(treeMapper.IsTeacherOfWhomInLevel(tid,sid,level)){
+                    treeMapper.modify(tid,sid,level,startTime,endTime);
+                }
+                else {
+                    treeMapper.modify(sid,tid,level,startTime,endTime);
+                }
+            }
+            requestMapper.refuseRequest(rid);
+        }
+        else {
+            requestMapper.changeToMyRequest(rid,uid,fromUid,toUid,"0"+type+sOrt);
+        }
     }
 
 }

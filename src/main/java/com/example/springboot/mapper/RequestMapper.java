@@ -27,4 +27,11 @@ public interface RequestMapper {
     int modifyOthersTree(String who, String modifyUid, String level, String startTime, String endTime);
 
     ArrayList<Requests> getAllRequests();
+
+    void refuseRequest(String rid);
+
+    Requests acceptRequest(String rid);
+
+
+    void changeToMyRequest(String rid, String uid, String fromUid, String toUid, String s);
 }

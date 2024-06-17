@@ -68,6 +68,33 @@ public class TreeMapperImpl implements TreeMapper {
         return nodes;
     }
 
+    @Override
+    public void del(String tid, String sid, String level) {
+        dbUtil.getConnection();
+        String sql="delete from tree where teacher_uid='"+tid+"' and student_uid='"+sid+"' and level='"+level+"'";
+        dbUtil.executeUpdate(sql);
+        dbUtil.close();
+    }
+
+    @Override
+    public void add(String tid, String sid, String level, String startTime, String endTime) {
+        dbUtil.getConnection();
+        String sql="insert into tree (teacher_uid,student_uid,level,start_time,end_time)" +
+                "values ('"+tid+"','"+sid+"','"+level+"','"+startTime+"','"+endTime+"')";
+        dbUtil.executeUpdate(sql);
+        dbUtil.close();
+    }
+
+    @Override
+    public void modify(String tid, String sid, String level, String startTime, String endTime) {
+        dbUtil.getConnection();
+        String sql="update tree " +
+                "set start_time='"+startTime+"' end_time='"+endTime+"' " +
+                "where teacher_uid='"+tid+"' and student_uid='"+sid+"' and level='"+level+"'";
+        dbUtil.executeUpdate(sql);
+        dbUtil.close();
+    }
+
     private void addRelation(ArrayList<Node> nodes, ResultSet rs, String sUid, String type) throws SQLException {
         String level=rs.getString("level");
         String startTime=rs.getString("start_time");
