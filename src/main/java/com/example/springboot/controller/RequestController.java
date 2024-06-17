@@ -78,8 +78,8 @@ public class RequestController {
     }
 
     @PostMapping("/delMyStudent")
-    public Result delMyStudent(String delUid){
-        int flag= requestService.delMyStudent(delUid);
+    public Result delMyStudent(String delUid,String level){
+        int flag= requestService.delMyStudent(delUid,level);
         if(flag==0){
             return Result.success();
         }
@@ -90,8 +90,31 @@ public class RequestController {
     }
 
     @PostMapping("/delMyTeacher")
-    public Result delMyTeacher(String delUid){
-        int flag = requestService.delMyTeacher(delUid);
+    public Result delMyTeacher(String delUid,String level){
+        int flag = requestService.delMyTeacher(delUid,level);
+        if(flag==0){
+            return Result.success();
+        }
+        else {
+            return Result.error("已经有相同操作");
+        }
+    }
+
+    @PostMapping("/delOthersStudent")
+    public Result delOthersStudent(String who,String delUid,String level){
+        int flag= requestService.delOthersStudent(who,delUid,level);
+        if(flag==0){
+            return Result.success();
+        }
+        else {
+            return Result.error("已经有相同操作");
+        }
+
+    }
+
+    @PostMapping("/delOthersTeacher")
+    public Result delOthersTeacher(String who,String delUid,String level){
+        int flag = requestService.delOthersTeacher(who,delUid,level);
         if(flag==0){
             return Result.success();
         }

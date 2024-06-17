@@ -10,7 +10,11 @@ public interface RequestService {
 
     int addOthersTeacher(String who, String addUid, String level, String startTime, String endTime);
 
-    int delMyStudent(String delUid);
+    int delMyStudent(String delUid,String level);
 
-    int delMyTeacher(String delUid);
+    int delMyTeacher(String delUid,String level);
+
+    int delOthersStudent(String who, String delUid,String level);
+
+    int delOthersTeacher(String who, String delUid,String level);
 }
