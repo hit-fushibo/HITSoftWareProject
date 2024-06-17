@@ -72,7 +72,7 @@ public class Requests {
 
         if(Objects.equals(meRoOthers, "0")){
             if(Objects.equals(type, "0")){
-                if(Objects.equals(sOrt, "0")){
+                if(Objects.equals(sOrt, "1")){
                     //删除自己的学生
                     description="删除您为"+fromName+"("+fromUid+")的"+Level+"学生";
                 }
@@ -81,7 +81,7 @@ public class Requests {
                     description="删除您为"+fromName+"("+fromUid+")的"+Level+"老师";
                 }
             } else if (Objects.equals(type, "1")) {
-                if(Objects.equals(sOrt, "0")){
+                if(Objects.equals(sOrt, "1")){
                     description="添加您为"+fromName+"("+fromUid+")的"+Level+"学生."+"师生关系起止时间为"+startTime.substring(0,4)+"-"+startTime.substring(4)+"至"+endTime.substring(0,4)+"-"+endTime.substring(4);
                 }
                 else {
@@ -94,7 +94,7 @@ public class Requests {
         }
         else {
             if(Objects.equals(type, "0")){
-                if(Objects.equals(sOrt, "0")){
+                if(Objects.equals(sOrt, "1")){
                     //删除自己的学生
                     description="删除"+toName+"("+toUid+")为您的"+Level+"学生";
                 }
@@ -103,7 +103,7 @@ public class Requests {
                     description="删除"+toName+"("+toUid+")为您的"+Level+"老师";
                 }
             } else if (Objects.equals(type, "1")) {
-                if(Objects.equals(sOrt, "0")){
+                if(Objects.equals(sOrt, "1")){
                     description="添加"+toName+"("+toUid+")为您的"+Level+"学生."+"师生关系起止时间为"+startTime.substring(0,4)+"-"+startTime.substring(4)+"至"+endTime.substring(0,4)+"-"+endTime.substring(4);
                 }
                 else {
