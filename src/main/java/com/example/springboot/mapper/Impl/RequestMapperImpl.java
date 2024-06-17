@@ -324,8 +324,9 @@ public class RequestMapperImpl implements RequestMapper {
                 sOrt=String.valueOf(rtype.charAt(2));
                 startTime=rs.getString("start_time");
                 endTime=rs.getString("end_time");
+                String uid=rs.getString("uid");
                 dbUtil.close();
-                return new Requests(rid,fromUid,fromName,toUid,toName,level,meRoOthers,type,sOrt,startTime,endTime,"",rs.getString("uid"));
+                return new Requests(rid,fromUid,fromName,toUid,toName,level,meRoOthers,type,sOrt,startTime,endTime,"",uid);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

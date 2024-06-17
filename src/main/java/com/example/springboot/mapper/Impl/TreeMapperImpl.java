@@ -50,12 +50,12 @@ public class TreeMapperImpl implements TreeMapper {
             throw new RuntimeException(e);
         }
         //获取学生
-        sql="select * from tree where student_uid='"+uid+"'";
+        sql="select * from tree where teacher_uid='"+uid+"'";
         try (ResultSet rs = dbUtil.executeQuery(sql)) {
             String sUid;
             String type;
             while (rs.next()) {
-                sUid=rs.getString("teacher_uid");
+                sUid=rs.getString("student_uid");
                 type="2";
                 addRelation(nodes, rs, sUid, type);
             }
@@ -108,7 +108,10 @@ public class TreeMapperImpl implements TreeMapper {
             }
         }
         if(flag){
-            nodes.add(new Node(sUid,type,"",""));
+            Node node=new Node(sUid,type,"","");
+            node.addRelation(level,startTime,endTime);
+            nodes.add(node);
+
         }
     }
 }

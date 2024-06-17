@@ -82,11 +82,11 @@ public class Requests {
                 }
             } else if (Objects.equals(type, "1")) {
                 if(Objects.equals(sOrt, "0")){
-                    description="添加您为"+fromName+"("+fromUid+")的"+Level+"学生";
+                    description="添加您为"+fromName+"("+fromUid+")的"+Level+"学生."+"师生关系起止时间为"+startTime.substring(0,4)+"-"+startTime.substring(4)+"至"+endTime.substring(0,4)+"-"+endTime.substring(4);
                 }
                 else {
                     //增加自己的老师
-                    description="添加您为"+fromName+"("+fromUid+")的"+Level+"老师";
+                    description="添加您为"+fromName+"("+fromUid+")的"+Level+"老师."+"师生关系起止时间为"+startTime.substring(0,4)+"-"+startTime.substring(4)+"至"+endTime.substring(0,4)+"-"+endTime.substring(4);
                 }
             }else {
                 description="修改您与"+fromName+"("+fromUid+")的"+Level+"师生关系起止时间为"+startTime.substring(0,4)+"-"+startTime.substring(4)+"至"+endTime.substring(0,4)+"-"+endTime.substring(4);
@@ -104,11 +104,11 @@ public class Requests {
                 }
             } else if (Objects.equals(type, "1")) {
                 if(Objects.equals(sOrt, "0")){
-                    description="添加"+toName+"("+toUid+")为您的"+Level+"学生";
+                    description="添加"+toName+"("+toUid+")为您的"+Level+"学生."+"师生关系起止时间为"+startTime.substring(0,4)+"-"+startTime.substring(4)+"至"+endTime.substring(0,4)+"-"+endTime.substring(4);
                 }
                 else {
                     //增加自己的老师
-                    description="添加"+toName+"("+toUid+")为您的"+Level+"老师";
+                    description="添加"+toName+"("+toUid+")为您的"+Level+"老师."+"师生关系起止时间为"+startTime.substring(0,4)+"-"+startTime.substring(4)+"至"+endTime.substring(0,4)+"-"+endTime.substring(4);
                 }
             }else {
                 description="修改您与"+toName+"("+toName+")的"+Level+"师生关系起止时间为"+startTime.substring(0,4)+"-"+startTime.substring(4)+"至"+endTime.substring(0,4)+"-"+endTime.substring(4);
