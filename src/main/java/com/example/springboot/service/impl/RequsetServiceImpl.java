@@ -35,7 +35,7 @@ public class RequsetServiceImpl implements RequestService {
             return 2;
         }
         //检查是否为自己的老师
-        if(treeMapper.IsTeacherOfWhomInLevel(addUid,uid,level)){
+        if(treeMapper.IsTeacherOfWhomInAnyLevel(addUid,uid)){
             return 3;
         }
         return requestMapper.addMyStudent(addUid,level,startTime,endTime);
@@ -50,7 +50,7 @@ public class RequsetServiceImpl implements RequestService {
             return 2;
         }
         //检查是否为自己的学生
-        if(treeMapper.IsTeacherOfWhomInLevel(uid,addUid,level)){
+        if(treeMapper.IsTeacherOfWhomInAnyLevel(uid,addUid)){
             return 3;
         }
         return requestMapper.addMyTeacher(addUid,level,startTime,endTime);
@@ -63,7 +63,7 @@ public class RequsetServiceImpl implements RequestService {
             return 2;
         }
         //检查是否为其的老师
-        if(treeMapper.IsTeacherOfWhomInLevel(addUid,who,level)){
+        if(treeMapper.IsTeacherOfWhomInAnyLevel(addUid,who)){
             return 3;
         }
         return requestMapper.addOthersStudent(who,addUid,level,startTime,endTime);
@@ -76,7 +76,7 @@ public class RequsetServiceImpl implements RequestService {
             return 2;
         }
         //检查是否为其的学生
-        if(treeMapper.IsTeacherOfWhomInLevel(who,addUid,level)){
+        if(treeMapper.IsTeacherOfWhomInAnyLevel(who,addUid)){
             return 3;
         }
         return requestMapper.addOthersTeacher(who,addUid,level,startTime,endTime);

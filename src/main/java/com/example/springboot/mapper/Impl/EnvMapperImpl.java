@@ -25,6 +25,7 @@ public class EnvMapperImpl implements EnvMapper {
             dbUtil.close();
             return value;
         } catch (SQLException e) {
+            dbUtil.close();
             throw new RuntimeException(e);
         }
 

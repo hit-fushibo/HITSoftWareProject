@@ -359,13 +359,14 @@ public class RequestMapperImpl implements RequestMapper {
     }
 
     private int repeatTest(String who, String toUid, String type,String level) {
+        //由外层调用，不控制数据库的连接和关闭
 //        dbUtil.getConnection();
 
         String sql="select * from request where uid='"+toUid+"' and from_uid='"+who+"' and to_uid='"+who+"' and level='"+level+"' and rtype='0"+type+"'";
         ResultSet rs=dbUtil.executeQuery(sql);
         try {
             if(rs.next()){
-                dbUtil.close();
+                //由外层调用，不控制数据库的连接和关闭
                 return 1;
             }
         } catch (SQLException e) {
@@ -376,7 +377,7 @@ public class RequestMapperImpl implements RequestMapper {
         rs=dbUtil.executeQuery(sql);
         try {
             if(rs.next()){
-                dbUtil.close();
+                //由外层调用，不控制数据库的连接和关闭
                 return 1;
             }
         } catch (SQLException e) {
