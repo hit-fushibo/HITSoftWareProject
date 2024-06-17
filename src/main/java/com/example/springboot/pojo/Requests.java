@@ -22,7 +22,7 @@ public class Requests {
     @JsonIgnore
     private String type;//0-删除，1-增加，2-修改
     @JsonIgnore
-    private String sOrt;//0-学生，1-老师
+    private String sOrt;//1-学生，2-老师
     @JsonIgnore
     private String startTime;
     @JsonIgnore

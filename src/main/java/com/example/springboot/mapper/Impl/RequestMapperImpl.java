@@ -258,7 +258,7 @@ public class RequestMapperImpl implements RequestMapper {
             String level;
             String meRoOthers;//0-对自己树的申请，1-对他人树的申请
             String type;//0-删除，1-增加，2-修改
-            String sOrt;//0-学生，1-老师
+            String sOrt;//1-学生，2-老师
             String startTime;
             String endTime;
             while (rs.next()) {
@@ -305,7 +305,7 @@ public class RequestMapperImpl implements RequestMapper {
             String level;
             String meRoOthers;//0-对自己树的申请，1-对他人树的申请
             String type;//0-删除，1-增加，2-修改
-            String sOrt;//0-学生，1-老师
+            String sOrt;//1-学生，2-老师
             String startTime;
             String endTime;
             if (rs.next()) {
