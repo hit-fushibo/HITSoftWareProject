@@ -153,7 +153,7 @@ public class UserMapperImpl implements UserMapper {
             }
 
         }
-
+        dbUtil.close();
         return u;
     }
 
