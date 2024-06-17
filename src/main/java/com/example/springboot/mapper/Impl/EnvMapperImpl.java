@@ -5,7 +5,8 @@ import com.example.springboot.utils.DBUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 @Component
 public class EnvMapperImpl implements EnvMapper {
     @Autowired

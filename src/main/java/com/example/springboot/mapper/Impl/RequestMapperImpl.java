@@ -5,7 +5,6 @@ import com.example.springboot.pojo.Requests;
 import com.example.springboot.utils.DBUtil;
 import com.example.springboot.utils.ThreadLocalUtil;
 import com.example.springboot.utils.TimeStamp;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -262,7 +261,6 @@ public class RequestMapperImpl implements RequestMapper {
             String sOrt;//0-学生，1-老师
             String startTime;
             String endTime;
-            String description;
             while (rs.next()) {
                 rid=rs.getString("rid");
                 fromUid=rs.getString("from_uid");
@@ -310,7 +308,6 @@ public class RequestMapperImpl implements RequestMapper {
             String sOrt;//0-学生，1-老师
             String startTime;
             String endTime;
-            String description;
             if (rs.next()) {
                 rid=rs.getString("rid");
                 fromUid=rs.getString("from_uid");
@@ -363,22 +360,28 @@ public class RequestMapperImpl implements RequestMapper {
 //        dbUtil.getConnection();
 
         String sql="select * from request where uid='"+toUid+"' and from_uid='"+who+"' and to_uid='"+who+"' and level='"+level+"' and rtype='0"+type+"'";
-        ResultSet rs=dbUtil.executeQuery(sql);
-        try {
-            if(rs.next()){
-                //由外层调用，不控制数据库的连接和关闭
-                return 1;
+        try (ResultSet rs = dbUtil.executeQuery(sql)) {
+            try {
+                if (rs.next()) {
+                    //由外层调用，不控制数据库的连接和关闭
+                    return 1;
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
         sql="select * from request where uid='"+who+"' and to_uid='"+toUid+"' and level='"+level+"' and rtype='1"+type+"'";
-        rs=dbUtil.executeQuery(sql);
-        try {
-            if(rs.next()){
-                //由外层调用，不控制数据库的连接和关闭
-                return 1;
+        try (ResultSet rs = dbUtil.executeQuery(sql)) {
+            try {
+                if (rs.next()) {
+                    //由外层调用，不控制数据库的连接和关闭
+                    return 1;
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
