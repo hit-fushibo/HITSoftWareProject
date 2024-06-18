@@ -11,15 +11,17 @@ public class Requests {
     private String rid;
     private  String fromUid;
     private String fromName;
+    @JsonIgnore
     private String toUid;
+    @JsonIgnore
     private String toName;
+    @JsonIgnore
     private String level;
 
     @JsonIgnore
     private String uid;
     @JsonIgnore
     private String  meRoOthers;//0-对自己树的申请，1-对他人树的申请
-    @JsonIgnore
     private String type;//0-删除，1-增加，2-修改
     @JsonIgnore
     private String sOrt;//1-学生，2-老师
