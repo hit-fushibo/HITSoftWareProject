@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+/接口文档.pdf
+/src/main/resources/static/usr_pic
