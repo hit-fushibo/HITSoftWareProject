@@ -1,7 +1,7 @@
 //定制请求实例
 
 import axios from "axios";
-import { useTokenStore } from "@/stores/token.js"
+import { usrTokenStore } from "@/stores/token.js"
 import router from '@/router'
 import {ElMessage} from "element-plus"
 
@@ -19,6 +19,7 @@ instance.interceptors.response.use(
         return Promise.reject(result.data);//异步的状态转化成失败的状态
     },
     err => {
+        console.log(err)
         //如果响应状态码时401，代表未登录，给出对应的提示，并跳转到登录页
         if (err.response.status === 401) {
             ElMessage.error('请先登录！ ')
@@ -37,7 +38,7 @@ export default instance;
 instance.interceptors.request.use(
     (config) => {
         //在发送请求之前做什么
-        let tokenStore = useTokenStore()
+        let tokenStore = usrTokenStore()
         //如果token中有值，在携带
         if (tokenStore.token) {
             config.headers.Authorization = tokenStore.token
