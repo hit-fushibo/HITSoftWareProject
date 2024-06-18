@@ -3,9 +3,9 @@ import { User, Lock } from "@element-plus/icons-vue"
 import { reactive, ref } from 'vue'
 import { ElMessage, type ComponentSize, type FormInstance, type FormRules } from 'element-plus'
 import {useRouter} from 'vue-router'
-import {useTokenStore} from "@/stores/token.js"
+import {usrTokenStore} from "@/stores/token.js"
 //调用useTokenStore得到状态
-const tokenStore=useTokenStore();
+const tokenStore=usrTokenStore();
 
 //控制注册和登录表单显示
 let isRegister = ref(false)

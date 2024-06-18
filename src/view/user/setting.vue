@@ -6,7 +6,8 @@ const userInfo = ref({
     nickname: 'zs',
     phone: '12345678910',
     email: 'zs@163.com',
-    myPage: 'http://localhost/mypage'
+    myPage: 'http://localhost/mypage',
+    usrPic:""
 })
 const rules = {
     name: [
@@ -34,13 +35,15 @@ const rules = {
 
 import {getUserInfoService,updateUserInfoService} from "@/api/user.js"
 import { ElMessage } from 'element-plus';
-const getUserInfo=async ()=>{
-    let response=await getUserInfoService()
-    userInfo.value=response.data;
+import {usrInfoStore} from "@/stores/token"
+const infoStore=usrInfoStore()
+const getUserInfo=()=>{
+    userInfo.value=infoStore.usrInfo;
 }
 
 const updateUserInfo=async ()=>{
     let response=await updateUserInfoService(userInfo.value)
+    infoStore.setUsrInfo(userInfo.value)
     ElMessage.success("成功修改")
 }
 getUserInfo();
