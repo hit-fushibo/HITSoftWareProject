@@ -26,6 +26,37 @@ const rules = {
         { validator: checkRePwd, trigger: "blur" }
     ]
 }
+import {updatePwdService} from "@/api/password.js"
+import { ElMessage } from 'element-plus';
+
+const updatePwd=async ()=>{
+    if(passwordInfo.value.originPwd===""){
+        ElMessage.error("请输入原密码")
+        return
+    }
+    if(passwordInfo.value.newPwd===""){
+        ElMessage.error("请输入新密码")
+        return
+    }
+    if(passwordInfo.value.confirmPwd===""){
+        ElMessage.error("请再次确认密码")
+        return
+    }
+    if(passwordInfo.value.newPwd!==passwordInfo.value.confirmPwd){
+        ElMessage.error("两次密码不匹配")
+        return
+    }
+    let updateJson={
+        old_pwd: passwordInfo.value.originPwd,
+        new_pwd: passwordInfo.value.newPwd
+    }
+    let response=await updatePwdService(updateJson)
+    
+    ElMessage.success("成功修改")
+    passwordInfo.value.originPwd=""
+    passwordInfo.value.newPwd=""
+    passwordInfo.value.confirmPwd=""
+}
 </script>
 <template>
     <el-card class="page-container">
@@ -48,7 +79,7 @@ const rules = {
                     </el-form-item>
                     
                     <el-form-item>
-                        <el-button type="primary">提交修改</el-button>
+                        <el-button type="primary" @click="updatePwd">提交修改</el-button>
                     </el-form-item></el-form>
             </el-col>
         </el-row>

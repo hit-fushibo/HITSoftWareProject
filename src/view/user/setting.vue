@@ -1,12 +1,12 @@
 <script setup>
-import { ref } from 'vue'
+import { ref ,onMounted} from 'vue'
 const userInfo = ref({
     uid: 100000001,
     name: 'zhangsan',
     nickname: 'zs',
     phone: '12345678910',
     email: 'zs@163.com',
-    mypage: 'http://localhost/mypage'
+    myPage: 'http://localhost/mypage'
 })
 const rules = {
     name: [
@@ -31,6 +31,19 @@ const rules = {
         { type: 'url', message: '网页地址格式不正确', trigger: 'blur' }
     ]
 }
+
+import {getUserInfoService,updateUserInfoService} from "@/api/user.js"
+import { ElMessage } from 'element-plus';
+const getUserInfo=async ()=>{
+    let response=await getUserInfoService()
+    userInfo.value=response.data;
+}
+
+const updateUserInfo=async ()=>{
+    let response=await updateUserInfoService(userInfo.value)
+    ElMessage.success("成功修改")
+}
+getUserInfo();
 </script>
 <template>
     <el-card class="page-container">
@@ -59,10 +72,10 @@ const rules = {
                         <el-input v-model="userInfo.phone"></el-input>
                     </el-form-item>
                     <el-form-item label="个人主页" prop="mypage">
-                        <el-input v-model="userInfo.mypage"></el-input>
+                        <el-input v-model="userInfo.myPage"></el-input>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary">提交修改</el-button>
+                        <el-button type="primary" @click="updateUserInfo">提交修改</el-button>
                     </el-form-item></el-form>
             </el-col>
         </el-row>

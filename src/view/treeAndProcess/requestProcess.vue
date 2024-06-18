@@ -58,64 +58,27 @@ function filterDataQuery(){
   })
   updateDisplayData();
 }
-
-function processButtonClick(rid,type){
+import {getAllRequestService,acceptRequestService,refuseRequestService} from "@/api/process.js"
+const processButtonClick=async(rid,type)=>{
   if(type===0){
-    console.log(`同意 ${rid} 的请求`)
+    let response=await acceptRequestService({rid:rid})
     
   }
   else{
-    console.log(`拒绝 ${rid} 的请求`)
+    let response= await refuseRequestService({rid:rid})
   }
   tableData.value=tableData.value.filter(item=> item.requestId!==rid)
   filterDataQuery()
 }
 
-function getRequestData() {
-  return [
-    {
-      name: "张三",
-      uid: "100000001",
-      type: "11",
-      description: "增加李四（100000002）为您的学生",
-      requestId: "12365"
-    },
-    {
-      name: "张三",
-      uid: "100000001",
-      type: "12",
-      description: "修改李四（100000002）与您的师生关系，开始时间改为2021-02",
-      requestId: "12387"
-    },
-    {
-      name: "张三",
-      uid: "100000001",
-      type: "10",
-      description: "删除您的学生李四（100000002）",
-      requestId: "12389"
-    },
-    {
-      name: "李四",
-      uid: "100000002",
-      type: "00",
-      description: "删除您为李四（100000002）的学生",
-      requestId: "12367"
-    },
-    {
-      name: "李四",
-      uid: "100000002",
-      type: "01",
-      description: "增加您为李四（100000002）的学生",
-      requestId: "12368"
-    },
-    {
-      name: "李四",
-      uid: "100000002",
-      type: "02",
-      description: "修改您与李四的师生关系，level改为博士",
-      requestId: "12369"
-    },
-  ]
+
+const getRequestData=async ()=> {
+  let response =await getAllRequestService();
+  console.log(response.data)
+  tableData.value = response.data;
+  console.log(tableData.value)
+  filterDataQuery();
+  updateDisplayData();
 }
 
 
@@ -130,9 +93,9 @@ const onSubmit = () => {
   console.log('submit!')
 }
 //获取申请信息
-tableData.value = getRequestData();
-filterDataQuery();
-updateDisplayData();
+getRequestData()
+
+
 </script>
 
 
@@ -164,19 +127,19 @@ updateDisplayData();
       <div class="table-pagination">
         <el-table :data="displayData" stripe border style="width: 100%">
           <el-table-column type="index" :index="indexMethod" label="序号" width="180" />
-          <el-table-column prop="name" label="申请人" width="180" />
-          <el-table-column prop="uid" label="UID" />
+          <el-table-column prop="fromName" label="申请人" width="180" />
+          <el-table-column prop="fromUid" label="UID" />
           <el-table-column label="类型">
             <template #default="scope">
-              <span v-if="scope.row.type === '00' || scope.row.type === '10'">删除</span>
-              <span v-else-if="scope.row.type === '01' || scope.row.type === '11'">增加</span>
+              <span v-if="scope.row.type ==='0'">删除</span>
+              <span v-else-if="scope.row.type ==='1'">增加</span>
               <span v-else>修改</span>
             </template>
           </el-table-column>
           <el-table-column prop="description" label="内容" />
           <el-table-column label="操作" width="180" align="center" #default="scope">
-            <el-button type="success" :icon="Check" circle @click="processButtonClick(scope.row.requestId,0)"/>
-            <el-button type="danger" :icon="Delete" circle @click="processButtonClick(scope.row.requestId,1)"/>
+            <el-button type="success" :icon="Check" circle @click="processButtonClick(scope.row.rid,0)"/>
+            <el-button type="danger" :icon="Delete" circle @click="processButtonClick(scope.row.rid,1)"/>
           </el-table-column>
         </el-table>
 

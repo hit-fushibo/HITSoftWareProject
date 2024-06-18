@@ -1,8 +1,12 @@
 <script lang="ts" setup>
 import { User, Lock } from "@element-plus/icons-vue"
 import { reactive, ref } from 'vue'
-import type { ComponentSize, FormInstance, FormRules } from 'element-plus'
+import { ElMessage, type ComponentSize, type FormInstance, type FormRules } from 'element-plus'
 import {useRouter} from 'vue-router'
+import {useTokenStore} from "@/stores/token.js"
+//调用useTokenStore得到状态
+const tokenStore=useTokenStore();
+
 //控制注册和登录表单显示
 let isRegister = ref(false)
 //绑定数据
@@ -139,7 +143,8 @@ const login = async ()=>{
     }
     else {
         //借助路由完成跳转
-        sessionStorage.setItem('jwtToken',response.data)
+        tokenStore.setToken(response.data);
+        ElMessage.success("登录成功")
         router.push('/')
     }
     
