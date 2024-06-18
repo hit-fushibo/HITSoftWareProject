@@ -6,6 +6,7 @@ import com.example.springboot.service.UserService;
 import com.example.springboot.utils.JwtUtil;
 import com.example.springboot.utils.MD5Util;
 import com.example.springboot.utils.ThreadLocalUtil;
+import com.example.springboot.utils.TimeStamp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -160,8 +161,11 @@ public class UserController {
         //文件的内容存储到本地磁盘
         Map<String,Object> map=ThreadLocalUtil.get();
         String uid= (String) map.get("uid");
-        file.transferTo(new File("D:\\code\\SoftWareProject\\src\\main\\resources\\static\\usr_pic\\"+uid+".png"));
+        long currentTime=System.currentTimeMillis();
+        String timeStamp=String.valueOf(currentTime);
+        file.transferTo(new File("D:\\code\\SoftWareProject\\backend\\src\\main\\resources\\static\\usr_pic\\"+uid+".png"));
         String url="\\static\\usr_pic\\"+uid+".png";
+//        userService.updateAvatar(url);
         return Result.success(url);
     }
 }
