@@ -13,7 +13,7 @@ export const userRegisterService=(registerData)=>{
     return requests.post('/user/register',params);
 }
 
-//提供注册接口
+//提供登录接口
 export const userLoginService=(registerData)=>{
     //借助urlSearchParams完成传递
     const params= new URLSearchParams();
@@ -31,4 +31,15 @@ export const getUserInfoService=()=>{
 //提供更新用户信息的接口
 export const updateUserInfoService=(userInfo)=>{
     return requests.put('/user/update',userInfo);
+}
+
+//提供用户搜索功能
+
+export const searchUsersService=(searchJson)=>{
+    //借助urlSearchParams完成传递
+    const params= new URLSearchParams();
+    for(let key in searchJson){
+        params.append(key,searchJson[key]);
+    }
+    return requests.post('/user/searchUsers',params);
 }
