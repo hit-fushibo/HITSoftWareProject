@@ -1,106 +1,147 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, reactive } from 'vue'
 import * as d3 from "d3";
 import avatar from '@/assets/logo.svg'
+import {
+    Check,
+    Delete,
+    Edit
+} from '@element-plus/icons-vue'
 
 let selectedResult = -1;
-let searchKeyword = ref('');
-let me = ref([]);
-let teachers = ref([]);
-let students = ref([]);
-let nodes = ref([]);
-let links = ref([]);
-let results = ref([]);
-let selectNodeType = ref(0);//2老师，1学生
-let selectNodeId = ref("");
-let isMyTree=true;
 
-me.value = [{
-    "uid": "100000002",
-    "type": "0",
-    "relationships": [],
-    "myPage": null,
-    "name": "钱二"
-}];
-teachers.value = [{
-    "uid": "100000001",
-    "type": "1",
-    "relationships": [
-        {
-            "level": "2",
-            "startTime": "2010-05",
-            "endTime": "2012-05"
-        },
-        {
-            "level": "0",
-            "startTime": "2004-05",
-            "endTime": "2008-05"
-        }
-    ],
-    "myPage": "http://localhost/mypage",
-    "name": "张三"
-},
-{
-    "uid": "100000003",
-    "type": "1",
-    "relationships": [
-        {
-            "level": "1",
-            "startTime": "2008-05",
-            "endTime": "2010-05"
-        }
-    ],
-    "myPage": null,
-    "name": "孙三"
-}];
-students.value = [{
-    "uid": "100000004",
-    "type": "2",
-    "relationships": [
-        {
-            "level": "0",
-            "startTime": "2012-05",
-            "endTime": "2014-05"
-        }
-    ],
-    "myPage": null,
-    "name": "李四"
-},
-{
-    "uid": "100000005",
-    "type": "2",
-    "relationships": [
-        {
-            "level": "1",
-            "startTime": "2016-06",
-            "endTime": "2020-06"
-        }
-    ],
-    "myPage": null,
-    "name": "周五"
-},
-{
-    "uid": "100000008",
-    "type": "2",
-    "relationships": [
-        {
-            "level": "0",
-            "startTime": "2018-02",
-            "endTime": "2018-06"
-        }
-    ],
-    "myPage": null,
-    "name": "冯八"
-}];
-nodes.value = [
-    { name: '张三' },
-    { name: '李四' },
-    { name: '王五' },
-];
-links.value = [
-    { source: '张三', target: '李四' },
-    { source: '李四', target: '王五' },
-];
+let addType = ref(0);//1-添加学生2-添加老师
+let addName = ref("");//添加的姓名
+let addUid = ref("");//添加的uid
+let addToUid = ref("");//被添加的人的Uid
+let addToName = ref("");//被添加人的姓名
+let addTableVisible = ref(false);//添加弹窗可视化控制
+
+const addFrom = reactive({
+    level: '',
+    startTime: '',
+    endTime: ''
+})
+const addOptions = [
+    {
+        value: '0',
+        label: '本科',
+    },
+    {
+        value: '1',
+        label: '硕士',
+    },
+    {
+        value: '2',
+        label: '博士',
+    }
+]
+
+const handleStartDateChange = (value) => {
+    if (value) {
+        // 将日期转换为指定格式 YYYYMM
+        const formattedDate = value.getFullYear() + '' + (value.getMonth() + 1).toString().padStart(2, '0');
+        addFrom.startTime = formattedDate;
+    } else {
+        addFrom.startTime = '';
+    }
+}
+
+const handleEndDateChange = (value) => {
+    if (value) {
+        // 将日期转换为指定格式 YYYYMM
+        const formattedDate = value.getFullYear() + '' + (value.getMonth() + 1).toString().padStart(2, '0');
+        addFrom.endTime = formattedDate;
+    } else {
+        addFrom.endTime = '';
+    }
+}
+
+const handleStartDateChangeM = (value) => {
+    if (value) {
+        // 将日期转换为指定格式 YYYYMM
+        const formattedDate = value.getFullYear() + '' + (value.getMonth() + 1).toString().padStart(2, '0');
+        modifyFrom.startTime = formattedDate;
+    } else {
+        modifyFrom.startTime = '';
+    }
+}
+
+const handleEndDateChangeM = (value) => {
+    if (value) {
+        // 将日期转换为指定格式 YYYYMM
+        const formattedDate = value.getFullYear() + '' + (value.getMonth() + 1).toString().padStart(2, '0');
+        modifyFrom.endTime = formattedDate;
+    } else {
+        modifyFrom.endTime = '';
+    }
+}
+
+
+let modifyName = ref("");//编辑的姓名
+let modifyUid = ref("");//编辑的uid
+let modifyToUid = ref("");//被编辑的人的Uid
+let modifyToName = ref("");//被编辑人的姓名
+let modifyRel = ref([]);//被编辑人与编辑人的师生关系
+let modifyTableVisible = ref(false);//编辑弹窗可视化控制
+let inModifyTableVisible = ref(false)
+const modifyFrom = reactive({
+    level: '',
+    startTime: '',
+    endTime: ''
+})
+
+let delType = ref(0);//1-删除学生2-删除老师
+let delName = ref("");//删除的姓名
+let delUid = ref("");//删除的uid
+let delToUid = ref("");//被删除的人的Uid
+let delToName = ref("");//被删除人的姓名
+let delTableVisible = ref(false);//删除弹窗可视化控制
+
+
+const years = computed(() => {
+    const currentYear = new Date().getFullYear();
+    return Array.from({ length: currentYear - 1949 }, (_, index) => (currentYear - index).toString());
+})
+
+const months = computed(() => {
+    return Array.from({ length: 12 }, (_, index) => (index + 1).toString().padStart(2, '0'));
+})
+
+const addTitle = computed(() => {
+    if (addType.value === 1) {
+        return "添加学生"
+    }
+    else if (addType.value === 2) {
+        return "添加老师"
+    }
+    else {
+        return "未初始化"
+    }
+})
+
+const delTitle = computed(() => {
+    if (delType.value === 1) {
+        return "删除学生"
+    }
+    else if (delType.value === 2) {
+        return "删除老师"
+    }
+    else {
+        return "未初始化"
+    }
+})
+
+let searchKeyword = ref('');
+let me = [];
+let teachers = [];
+let students = [];
+let nodes = [];
+let links = [];
+let results = ref([]);
+let isMyTree = true;
+let currentTreeUid = "";
+let currentTreeName = "";
 
 const r = 30;
 let name = '';
@@ -131,19 +172,23 @@ function cul(x1, y1, r1, x2, y2, r2) {
     return [sx, sy, dx, dy];
 
 }
-function drawChart(newStudents, newTeachers, me) {
-    me.value = me
-    teachers.value = newTeachers
-    students.value = newStudents
-    nodes.value = me.value.concat(students.value, teachers.value)
-    let teacherLinks = teachers.value.map(teacher => {
-        return { source: teacher.name, target: me.value[0].name };
+function drawChart() {
+
+    nodes = []
+    links = []
+
+    nodes = me.concat(teachers, students)
+    let teacherLinks = teachers.map(teacher => {
+        return { source: teacher.name, target: me[0].name };
     });
-    let studentLinks = students.value.map(student => {
-        return { source: me.value[0].name, target: student.name }
+    let studentLinks = students.map(student => {
+        return { source: me[0].name, target: student.name }
     });
 
-    links.value = teacherLinks.concat(studentLinks);
+    links = teacherLinks.concat(studentLinks);
+
+    console.log(nodes, links)
+
     const container = document.getElementById('tree'); // 获取容器元素
     container.innerHTML = ''; // 清空容器中的所有子元素
 
@@ -173,15 +218,15 @@ function drawChart(newStudents, newTeachers, me) {
     // 创建一个力导向图布局，设置范围为容器的宽度和高度
 
 
-    const simulation = d3.forceSimulation(nodes.value)
-        .force('link', d3.forceLink(links.value).id(d => d.name))
+    const simulation = d3.forceSimulation(nodes)
+        .force('link', d3.forceLink(links).id(d => d.name))
         .force('charge', d3.forceManyBody().strength(-500 * r))
         .force('center', d3.forceCenter(containerWidth / 2, containerHeight / 2));
 
 
     // 创建连接线
     const link = svg.selectAll('.link')
-        .data(links.value)
+        .data(links)
         .enter()
         .append('line')
         .attr('class', 'link')
@@ -191,7 +236,7 @@ function drawChart(newStudents, newTeachers, me) {
 
     // 创建节点
     const node = svg.selectAll('.node')
-        .data(nodes.value)
+        .data(nodes)
         .enter()
         .append('circle')
         .attr('class', 'node')
@@ -203,10 +248,23 @@ function drawChart(newStudents, newTeachers, me) {
         .style('pointer-events', 'all') // 设置鼠标事件在整个节点区域内生效
         .on('contextmenu', (event, d) => {
             if (d.type == 0) { return }
-            selectNodeId = d.uid;
-            selectNodeType = d.type;
-            name = d.name;
-            console.log(selectNodeId, selectNodeType)
+            delUid.value = d.uid;
+            modifyUid.value = d.uid;
+            delName.value = d.name;
+            modifyName.value = d.name;
+            delToName = currentTreeName;
+            modifyToName = currentTreeName;
+            delToUid = currentTreeUid;
+            modifyToUid = currentTreeUid;
+            if (d.type === '1') {
+                delType.value = 2
+            }
+            else {
+                delType.value = 1
+            }
+
+            modifyRel.value = d.relationships;
+            console.log(d.relationships, modifyRel.value)
             event.preventDefault();
 
             // 显示菜单
@@ -216,10 +274,16 @@ function drawChart(newStudents, newTeachers, me) {
                 .style('top', event.pageY + 'px');
 
 
+        }).on('dblclick', (event, d) => {
+            // 双击事件处理逻辑
+            console.log('Double click on node:', d.myPage);
+            if (d.myPage && d.myPage.trim() !== '') {
+                window.open(d.myPage, '_blank');
+            }
         });
     //添加文字
     const texts = svg.selectAll("text")
-        .data(nodes.value)
+        .data(nodes)
         .enter()
         .append("text")
         .style("fill", "black")
@@ -297,10 +361,20 @@ const showTree = (resultNumber) => {
     // 获取选中的结果框
     const selected = document.querySelector('.result_box:nth-child(' + String(selectedResult) + ')');
 
-    // 从结果框中获取 ID
+    // 从结果框中获取Name和ID
+    const nameElement = selected.querySelector('.top-info p:nth-child(1)');
+    const name = nameElement.textContent.split('：')[1];
     const idElement = selected.querySelector('.top-info p:nth-child(2)');
     const id = idElement.textContent.split('：')[1];
-    console.log('展示 ID 为:', id, "的师承树");
+    currentTreeName = name
+    currentTreeUid = id
+    if (id === infoStore.usrInfo.uid) {
+        isMyTree = true
+    }
+    else {
+        isMyTree = false
+    }
+
 
     //取消一并引起的两次单击事件的设置，直接设置为没有选中
     if (selectedResult >= 0) {
@@ -313,22 +387,39 @@ const showTree = (resultNumber) => {
 
     }
     selectedResult = -1;
+    getTree(id)
 }
 
 //获取师承树
-import {getTreeService} from "@/api/tree"
-import {usrInfoStore} from "@/stores/token"
-const getTree=async(uid)=>{
+import { getTreeService } from "@/api/tree"
+import { usrInfoStore } from "@/stores/token"
+const getTree = async (uid) => {
     console.log(uid)
-    let getJson={
-        uid:uid
+    let getJson = {
+        uid: uid
     }
     let response = await getTreeService(getJson)
-    
     console.log(response.data)
+    me = []
+    teachers = []
+    students = []
+
+    response.data.forEach(obj => {
+        if (obj.type === "0") {
+            me.push(obj);
+        } else if (obj.type === "1") {
+            teachers.push(obj);
+        } else {
+            students.push(obj);
+        }
+    });
+    console.log(me)
+    console.log(teachers)
+    console.log(students)
+    drawChart();
 }
-const infoStroe=usrInfoStore();
-getTree(infoStroe.usrInfo.uid);
+const infoStore = usrInfoStore();
+
 
 import { searchUsersService } from "@/api/user"
 import { ElMessage } from 'element-plus';
@@ -344,7 +435,7 @@ function getType(id) {
 }
 
 const search = async () => {
-    if(searchKeyword.value===''){
+    if (searchKeyword.value === '') {
         ElMessage.error("请输入值")
         return
     }
@@ -358,68 +449,382 @@ const search = async () => {
     results.value = response.data
     console.log(results.value)
     results.value = results.value.map(item => {
-            let usrPic = item.usrPic;
-            if (usrPic) {
-                usrPic = usrPic.replace(/\\/g, '/').replace(/^/, 'http://localhost:9090');
-            } else {
-                usrPic = null;
-            }
-            return {
-                ...item,
-                usrPic: usrPic
-            };
-        });
+        let usrPic = item.usrPic;
+        if (usrPic) {
+            usrPic = usrPic.replace(/\\/g, '/').replace(/^/, 'http://localhost:9090');
+        } else {
+            usrPic = null;
+        }
+        return {
+            ...item,
+            usrPic: usrPic
+        };
+    });
     console.log(results.value)
 
 }
 
-const addStudent = () => {
+const addStudentOnClick = () => {
     console.log(selectedResult)
     if (selectedResult < 0) {
-        alert("请选择一个人");
+        ElMessage.error("请选择一个人")
         return;
     }
     // 获取选中的结果框
     const selected = document.querySelector('.result_box:nth-child(' + String(selectedResult) + ')');
 
-    // 从结果框中获取 ID
+    // 从结果框中获取Name和ID
+    const nameElement = selected.querySelector('.top-info p:nth-child(1)');
+    const name = nameElement.textContent.split('：')[1];
     const idElement = selected.querySelector('.top-info p:nth-child(2)');
     const id = idElement.textContent.split('：')[1];
+    addType.value = 1
+    addName.value = name
+    addUid.value = id
+    addToName = currentTreeName
+    addToUid = currentTreeUid
 
-    console.log('添加学生的 ID 为:', id);
+    addTableVisible.value = true;
 
 }
 
-const addTeacher = () => {
+const addTeachertOnClick = () => {
     console.log(selectedResult)
     if (selectedResult < 0) {
-        alert("请选择一个人");
+        ElMessage.error("请选择一个人")
         return;
     }
     // 获取选中的结果框
     const selected = document.querySelector('.result_box:nth-child(' + String(selectedResult) + ')');
 
-    // 从结果框中获取 ID
+    // 从结果框中获取Name和ID
+    const nameElement = selected.querySelector('.top-info p:nth-child(1)');
+    const name = nameElement.textContent.split('：')[1];
     const idElement = selected.querySelector('.top-info p:nth-child(2)');
     const id = idElement.textContent.split('：')[1];
+    addType.value = 2
+    addName.value = name
+    addUid.value = id
+    addToName = currentTreeName
+    addToUid = currentTreeUid
 
-    console.log('添加老师的 ID 为:', id);
+    addTableVisible.value = true;
 
 }
+
+const modifyOnClicked = () => {
+    modifyTableVisible.value = true
+}
+
+const delOnClicked = () => {
+    delTableVisible.value = true
+}
+
+const editOnClicked = (level) => {
+    modifyFrom.level = level
+    inModifyTableVisible.value = true
+}
+
+import {
+    addMyStudentService, addMyTeacherService,
+    addOthersStudentService, addOthersTeacherService,
+    delMyStudentService, delMyTeacherService,
+    delOthersStudentService, delOthersTeacherService,
+    modifyMyTreeService, modifyOthersTreeService
+} from "@/api/process"
+
+const add = async () => {
+    let Level = addFrom.level
+    let StartTime = addFrom.startTime
+    let EndTime = addFrom.endTime
+    console.log(Level === '')
+
+    if (Level === '') {
+        ElMessage.error('请选择一个师生关系层次')
+        return
+    }
+    if (StartTime === '') {
+        ElMessage.error('请选择师生关系开始时间')
+        return
+    }
+    if (EndTime === '') {
+        ElMessage.error('请选择师生关系结束时间')
+        return
+    }
+
+
+    addFrom.level = ''
+    addFrom.startTime = ''
+    addFrom.endTime = ''
+
+    if (isMyTree) {
+        let postJson = {
+            addUid: addUid.value,
+            level: Level,
+            startTime: StartTime,
+            endTime: EndTime
+        }
+        if (addType.value === 1) {
+            //添加自己的学生
+            let response = await addMyStudentService(postJson)
+        }
+        else {
+            //添加自己的老师
+            let response = await addMyTeacherService(postJson)
+        }
+    }
+    else {
+        let postJson = {
+            who: currentTreeUid,
+            addUid: addUid.value,
+            level: Level,
+            startTime: StartTime,
+            endTime: EndTime
+        }
+        if (addType.value === 1) {
+            //添加他人的学生
+            let response = await addOthersStudentService(postJson)
+        }
+        else {
+            //添加他人的老师
+            let response = await addOthersTeacherService(postJson)
+        }
+    }
+    ElMessage.success("已添加申请，等待对方同意")
+    addTableVisible.value = false
+}
+
+const modify = async () => {
+    let Level = modifyFrom.level
+    let StartTime = modifyFrom.startTime
+    let EndTime = modifyFrom.endTime
+    console.log(Level === '')
+
+    if (Level === '') {
+        ElMessage.error('请选择一个师生关系层次')
+        return
+    }
+    if (StartTime === '') {
+        ElMessage.error('请选择师生关系开始时间')
+        return
+    }
+    if (EndTime === '') {
+        ElMessage.error('请选择师生关系结束时间')
+        return
+    }
+
+
+    modifyFrom.level = ''
+    modifyFrom.startTime = ''
+    modifyFrom.endTime = ''
+
+    if (isMyTree) {
+        let postJson = {
+            modifyUid: modifyUid.value,
+            level: Level,
+            startTime: StartTime,
+            endTime: EndTime
+        }
+        //修改自己的树
+        let response = await modifyMyTreeService(postJson)
+    }
+    else {
+        let postJson = {
+            who: currentTreeUid,
+            modifyUid: modifyUid.value,
+            level: Level,
+            startTime: StartTime,
+            endTime: EndTime
+        }
+        //修改他人的树
+        let response = await modifyOthersTreeService(postJson)
+    }
+    ElMessage.success("已添加申请，等待对方同意")
+    inModifyTableVisible.value = false
+}
+
+const del = async (level) => {
+    let Level = level
+
+
+    if (Level === '') {
+        ElMessage.error('请选择一个师生关系层次')
+        return
+    }
+
+    if (isMyTree) {
+        let postJson = {
+            delUid: delUid.value,
+            level: Level,
+        }
+        if (delType.value === 1) {
+            //删除自己的学生
+            let response = await delMyStudentService(postJson)
+        }
+        else {
+            //删除自己的老师
+            let response = await delMyTeacherService(postJson)
+        }
+    }
+    else {
+        let postJson = {
+            who: currentTreeUid,
+            delUid: delUid.value,
+            level: Level,
+        }
+        if (delType.value === 1) {
+            //删除他人的学生
+            let response = await delOthersStudentService(postJson)
+        }
+        else {
+            //删除他人的老师
+            let response = await delOthersTeacherService(postJson)
+        }
+    }
+    ElMessage.success("已添加申请，等待对方同意")
+}
+
+//删除师生关系
+const deleteOnClicked = (level) => {
+    ElMessageBox.confirm(
+        '你确认删除该师生关系吗？ ',
+        '警告',
+        {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'warning',
+        }
+    ).then(() => {
+
+        del(level)
+        delTableVisible.value = false
+    }).catch(() => {
+        //用户点击了取消
+        ElMessage({
+            type: 'info',
+            message: '取消删除',
+        })
+    })
+}
+
 d3.select(document).on('click', () => {
     // 隐藏菜单栏
     d3.select('.context-menu').style('display', 'none');
 });
 
 onMounted(() => {
-    drawChart(students.value, teachers.value, me.value);
+    currentTreeUid = infoStore.usrInfo.uid;
+    currentTreeName = infoStore.usrInfo.name;
+    getTree(infoStore.usrInfo.uid);
 });
+
 </script>
 
 <template>
+    <!-- 添加弹窗 -->
+    <el-dialog v-model="addTableVisible" aligin-cnter :title="addTitle">
+        <el-card>
+            <template #header>
+                <span v-if="addType === 1">添加{{ addName }}({{ addUid }})为{{ addToName }}({{ addToUid }})的学生</span>
+                <span v-else>添加{{ addName }}({{ addUid }})为{{ addToName }}({{ addToUid }})的老师</span>
+            </template>
+            <el-form :model="addFrom">
+                <el-form-item label="师生关系层次">
+                    <el-select v-model="addFrom.level" clearable>
+                        <el-option v-for="item in addOptions" :key="item.value" :label="item.label"
+                            :value="item.value" />
+                    </el-select>
+
+                </el-form-item>
+                <el-form-item label="师生关系开始时间">
+                    <el-date-picker v-model="addFrom.startTime" type="month" format="YYYYMM"
+                        @change="handleStartDateChange">
+
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="师生关系结束时间">
+                    <el-date-picker v-model="addFrom.endTime" type="month" format="YYYYMM"
+                        @change="handleEndDateChange">
+
+                    </el-date-picker>
+                </el-form-item>
+            </el-form>
+            <el-button @click="add">添加</el-button>
+        </el-card>
+
+    </el-dialog>
+
+    <!-- 编辑弹窗 -->
+    <el-dialog v-model="modifyTableVisible" aligin-cnter title="编辑">
+        <el-card>
+            <template #header>
+                <span>修改{{ modifyName }}({{ modifyUid }})与{{ modifyToName }}({{ modifyToUid }})的师生关系</span>
+            </template>
+            <el-table :data="modifyRel" stripe border style="width:100%">
+                <el-table-column label="层次">
+                    <template #default="scope">
+                        <span v-if="scope.row.level === '0'">本科</span>
+                        <span v-else-if="scope.row.level === '1'">硕士</span>
+                        <span v-else>博士</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="startTime" label="开始时间" />
+                <el-table-column prop="endTime" label="结束时间" />
+                <el-table-column label="修改" align="center" #default="scope">
+                    <el-button type="primary" :icon="Edit" circle @click="editOnClicked(scope.row.level)" />
+                    <!-- @click="processButtonClick(scope.row.level)" -->
+                </el-table-column>
+            </el-table>
+        </el-card>
+    </el-dialog>
+
+    <el-dialog v-model="inModifyTableVisible" aligin-center draggable title="修改起始时间">
+        <el-form :model="modifyFrom">
+            <el-form-item label="师生关系开始时间">
+                <el-date-picker v-model="modifyFrom.startTime" type="month" format="YYYYMM"
+                    @change="handleStartDateChangeM">
+
+                </el-date-picker>
+            </el-form-item>
+            <el-form-item label="师生关系结束时间">
+                <el-date-picker v-model="modifyFrom.endTime" type="month" format="YYYYMM"
+                    @change="handleEndDateChangeM">
+
+                </el-date-picker>
+            </el-form-item>
+        </el-form>
+        <el-button @click="modify">修改</el-button>
+    </el-dialog>
+
+    <!-- 删除弹窗 -->
+    <el-dialog v-model="delTableVisible" aligin-cnter :title="delTitle">
+        <el-card>
+            <template #header>
+                <span v-if="delType === 1">删除{{ delName }}({{ delUid }})为{{ delToName }}({{ delToUid }})的学生</span>
+                <span v-else>删除{{ delName }}({{ delUid }})为{{ delToName }}({{ delToUid }})的老师</span>
+            </template>
+            <el-table :data="modifyRel" stripe border style="width:100%">
+                <el-table-column label="层次">
+                    <template #default="scope">
+                        <span v-if="scope.row.level === '0'">本科</span>
+                        <span v-else-if="scope.row.level === '1'">硕士</span>
+                        <span v-else>博士</span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="startTime" label="开始时间" />
+                <el-table-column prop="endTime" label="结束时间" />
+                <el-table-column label="删除" align="center" #default="scope">
+                    <el-button type="danger" :icon="Delete" circle @click="deleteOnClicked(scope.row.level)" />
+                </el-table-column>
+            </el-table>
+        </el-card>
+    </el-dialog>
+
+
+    <!-- 右键菜单项 -->
     <div class="context-menu" style="display: none; position: absolute;">
-        <div class="context-menu-item">修改</div>
-        <div class="context-menu-item">删除</div>
+        <div class="context-menu-item" @click="modifyOnClicked">修改</div>
+        <div class="context-menu-item" @click="delOnClicked">删除</div>
     </div>
 
     <div id="TreeAndSearch">
@@ -451,8 +856,8 @@ onMounted(() => {
                 </el-card>
             </div>
             <div class="button-container">
-                <el-button class="add-student" @click="addStudent">添加为学生</el-button>
-                <el-button class="add-teacher" @click="addTeacher">添加为老师</el-button>
+                <el-button class="add-student" @click="addStudentOnClick">添加为学生</el-button>
+                <el-button class="add-teacher" @click="addTeachertOnClick">添加为老师</el-button>
             </div>
         </div>
     </div>

@@ -5,6 +5,7 @@ import avatar from '@/assets/logo.svg'
 const uploadRef = ref()
 //用户头像地址
 let imgUrl = ref()
+let avatarUrl='';
 
 //获得用户头像地址
 import { getAvatarUrlService } from "@/api/avatar"
@@ -14,6 +15,7 @@ const getAvatarUrl = async () => {
     console.log(response)
     if (response.data.usrPic && response.data.usrPic !== "") {
         imgUrl.value = "http://localhost:9090" + response.data.usrPic
+        avatarUrl=response.data.usrPic
         console.log(imgUrl.value)
     }
 }
@@ -21,8 +23,20 @@ const getAvatarUrl = async () => {
 const uploadSuccess = (result) => {
     //回显图片
     imgUrl.value = "http://localhost:9090" +result.data
+    avatarUrl=result.data
     console.log(imgUrl.value)
 }
+
+import {updateAvatarService} from "@/api/avatar"
+const updateAvatar=async()=>{
+    let response = await updateAvatarService(avatarUrl)
+    ElMessage.success("成功上传")
+    userInfoStore.info.userPic=imgUrl.value
+}
+
+import {usrTokenStore} from "@/stores/token"
+import { ElMessage } from 'element-plus';
+const tokenStore=usrTokenStore();
 getAvatarUrl()
 
 </script>
@@ -36,7 +50,8 @@ getAvatarUrl()
         <el-row>
             <el-col :span="12">
                 <el-upload ref="uploadRef" class="avatar-uploader" :show-file-list="false" :auto-upload="true"
-                    action="/api/user/uploadAvatar" name="file" :headers="{ 'Authorization': tokenStore.token }"
+                    action="/api/user/uploadAvatar" name="file" :headers="{ 'Authorization': tokenStore.token }" :limit="1"
+                    :on-exceed="handleExceed"
                     :on-success="uploadSuccess">
                     <img v-if="imgUrl" :src="imgUrl" class="avatar" />
                     <img v-else :src="avatar" width="278" />
@@ -46,7 +61,7 @@ getAvatarUrl()
                     @click="uploadRef.$el.querySelector('input').click()">
                     选择图片
                 </el-button>
-                <el-button type="success" :icon="Upload" size="large">
+                <el-button type="success" :icon="Upload" size="large" @click="updateAvatar">
                     上传头像
                 </el-button>
             </el-col>

@@ -12,16 +12,17 @@ import {
     Setting
 } from '@element-plus/icons-vue'
 import avatar from '@/assets/logo.svg'
-import { ref } from "vue"
+import { ref, onBeforeUnmount, onMounted, computed} from "vue"
+const isMainPageInit = ref(false)
 
-const usrInfo=ref({
-    uid:"",
-    phone:"",
-    email:"",
-    name:"",
-    nickname:"",
-    usrPic:"",
-    myPage:""
+const usrInfo = ref({
+    uid: "",
+    phone: "",
+    email: "",
+    name: "",
+    nickname: "",
+    usrPic: "",
+    myPage: ""
 })
 
 const name = ref('default name')
@@ -31,14 +32,23 @@ let students = ref([])
 let me = ref({})
 let isMe = ref(true)
 
+const imgUrl=computed(()=>{
+    if(usrInfo.value.usrPic===''){
+        console.log(usrInfo.value.usrPic==='')
+    }
+    
+    console.log("http://localhost:9090" + usrInfo.value.usrPic)
+    return "http://localhost:9090" + usrInfo.value.usrPic
+})
+
 //获取个人信息
-import {getUserInfoService} from "@/api/user"
-import {usrInfoStore,usrTokenStore} from "@/stores/token"
-const infoStore=usrInfoStore()
-const tokenStore=usrTokenStore();
-const getUsrInfo= async ()=>{
+import { getUserInfoService } from "@/api/user"
+import { usrInfoStore, usrTokenStore } from "@/stores/token"
+const infoStore = usrInfoStore()
+const tokenStore = usrTokenStore();
+const getUsrInfo = async () => {
     let response = await getUserInfoService();
-    usrInfo.value= response.data
+    usrInfo.value = response.data
     //使用pinia持久化用户数据
     infoStore.setUsrInfo(usrInfo.value)
     console.log(usrInfo.value)
@@ -64,8 +74,8 @@ const handleCommand = (command) => {
         ).then(async () => {
             //用户点击了确认
             //清空pinia中的token和个人信息
-            infoStore.info={}
-            tokenStore.token=''
+            infoStore.info = {}
+            tokenStore.token = ''
             //跳转到登录页
             router.push('/login')
         }).catch(() => {
@@ -80,6 +90,12 @@ const handleCommand = (command) => {
         router.push('/user/' + command)
     }
 }
+
+//关闭页面清除缓存
+
+
+
+
 
 </script>
 <template>
@@ -135,7 +151,8 @@ const handleCommand = (command) => {
                 <div>您好： <strong>{{ usrInfo.name }}</strong></div>
                 <el-dropdown placement="bottom-end" @command="handleCommand">
                     <span class="el-dropdown__box">
-                        <el-avatar :src="avatar" />
+                        <el-avatar v-if="usrInfo.usrPic===''">{{ usrInfo.name }}</el-avatar>
+                        <el-avatar v-else :src="imgUrl" />
                         <el-icon>
                             <CaretBottom />
                         </el-icon>

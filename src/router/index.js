@@ -8,6 +8,7 @@ import requestProcess from "@/view/treeAndProcess/requestProcess.vue";
 import setting from "@/view/user/setting.vue";
 import password from "@/view/user/password.vue"
 import avatarUpload from "@/view/user/avatarUpload.vue";
+import main from "@/view/main.vue"
 
 //定义路由关系
 const routes=[
@@ -18,6 +19,7 @@ const routes=[
         path:'/',
         component:mainPage,
         redirect:'/treeAndProcess/tree',
+        //mainPage子路由
         children:[
             {path: '/treeAndProcess/tree',component:tree},
             {path: '/treeAndProcess/requestProcess',component:requestProcess},
@@ -26,9 +28,10 @@ const routes=[
             {path: '/user/avatarUpload',component:avatarUpload}
         ]
         
-    }
+    },
+    {path:'/main',component:main}
 
-    //mainPage子路由
+    
 
 ]
 
