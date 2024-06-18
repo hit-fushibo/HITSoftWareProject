@@ -2,7 +2,7 @@ package com.example.springboot.mapper.Impl;
 
 import com.example.springboot.mapper.TreeMapper;
 import com.example.springboot.pojo.Node;
-import com.example.springboot.utils.DBUtil;
+import com.example.springboot.utils.TreeDBUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,32 +15,32 @@ import java.util.Objects;
 public class TreeMapperImpl implements TreeMapper {
 
     @Autowired
-    private DBUtil dbUtil;
+    private TreeDBUtil treeDbUtil;
     @Override
     public boolean IsTeacherOfWhomInLevel(String tUid, String sUid,String level) {
-        dbUtil.getConnection();
+        treeDbUtil.getConnection();
         String sql="select * from tree where teacher_uid='"+tUid+"' and student_uid='"+sUid+"' and level='"+level+"'";
-        ResultSet rs=dbUtil.executeQuery(sql);
+        ResultSet rs= treeDbUtil.executeQuery(sql);
         try {
             if(rs.next()){
-                dbUtil.close();
+                treeDbUtil.close();
                 return true;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        dbUtil.close();
+        treeDbUtil.close();
         return false;
     }
 
     @Override
     public boolean IsTeacherOfWhomInAnyLevel(String tUid, String sUid) {
-        dbUtil.getConnection();
+        treeDbUtil.getConnection();
         String sql="select * from tree where teacher_uid='"+tUid+"' and student_uid='"+sUid+"'";
-        try (ResultSet rs = dbUtil.executeQuery(sql)) {
+        try (ResultSet rs = treeDbUtil.executeQuery(sql)) {
             try {
                 if (rs.next()) {
-                    dbUtil.close();
+                    treeDbUtil.close();
                     return true;
                 }
             } catch (SQLException e) {
@@ -49,17 +49,17 @@ public class TreeMapperImpl implements TreeMapper {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        dbUtil.close();
+        treeDbUtil.close();
         return false;
     }
 
     @Override
     public ArrayList<Node> getTree(String uid) {
         ArrayList<Node> nodes=new ArrayList<>();
-        dbUtil.getConnection();
+        treeDbUtil.getConnection();
         //获取老师
         String sql="select * from tree where student_uid='"+uid+"'";
-        try (ResultSet rs = dbUtil.executeQuery(sql)) {
+        try (ResultSet rs = treeDbUtil.executeQuery(sql)) {
             String tUid;
             String type;
             while (rs.next()) {
@@ -72,7 +72,7 @@ public class TreeMapperImpl implements TreeMapper {
         }
         //获取学生
         sql="select * from tree where teacher_uid='"+uid+"'";
-        try (ResultSet rs = dbUtil.executeQuery(sql)) {
+        try (ResultSet rs = treeDbUtil.executeQuery(sql)) {
             String sUid;
             String type;
             while (rs.next()) {
@@ -85,35 +85,35 @@ public class TreeMapperImpl implements TreeMapper {
         }
 
         nodes.add(new Node(uid,"0","",""));
-        dbUtil.close();
+        treeDbUtil.close();
         return nodes;
     }
 
     @Override
     public void del(String tid, String sid, String level) {
-        dbUtil.getConnection();
+        treeDbUtil.getConnection();
         String sql="delete from tree where teacher_uid='"+tid+"' and student_uid='"+sid+"' and level='"+level+"'";
-        dbUtil.executeUpdate(sql);
-        dbUtil.close();
+        treeDbUtil.executeUpdate(sql);
+        treeDbUtil.close();
     }
 
     @Override
     public void add(String tid, String sid, String level, String startTime, String endTime) {
-        dbUtil.getConnection();
+        treeDbUtil.getConnection();
         String sql="insert into tree (teacher_uid,student_uid,level,start_time,end_time)" +
                 "values ('"+tid+"','"+sid+"','"+level+"','"+startTime+"','"+endTime+"')";
-        dbUtil.executeUpdate(sql);
-        dbUtil.close();
+        treeDbUtil.executeUpdate(sql);
+        treeDbUtil.close();
     }
 
     @Override
     public void modify(String tid, String sid, String level, String startTime, String endTime) {
-        dbUtil.getConnection();
+        treeDbUtil.getConnection();
         String sql="update tree " +
                 "set start_time='"+startTime+"' end_time='"+endTime+"' " +
                 "where teacher_uid='"+tid+"' and student_uid='"+sid+"' and level='"+level+"'";
-        dbUtil.executeUpdate(sql);
-        dbUtil.close();
+        treeDbUtil.executeUpdate(sql);
+        treeDbUtil.close();
     }
 
     private void addRelation(ArrayList<Node> nodes, ResultSet rs, String sUid, String type) throws SQLException {
