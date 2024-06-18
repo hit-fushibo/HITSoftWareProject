@@ -23,3 +23,12 @@ export const userLoginService=(registerData)=>{
     return requests.post('/user/login',params);
 }
 
+//提供获取用户信息的接口
+export const getUserInfoService=()=>{
+    return requests.get('/user/userinfo');
+}
+
+//提供更新用户信息的接口
+export const updateUserInfoService=(userInfo)=>{
+    return requests.put('/user/update',userInfo);
+}
