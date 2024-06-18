@@ -8,6 +8,8 @@ import com.example.springboot.utils.MD5Util;
 import com.example.springboot.utils.ThreadLocalUtil;
 import com.example.springboot.utils.TimeStamp;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -155,17 +157,56 @@ public class UserController {
 
     }
 
-
+    @Autowired
+    private usrPicDir picDir;
     @PostMapping("uploadAvatar")
     public Result<String> uploadAvatar(MultipartFile file) throws IOException {
-        //文件的内容存储到本地磁盘
-        Map<String,Object> map=ThreadLocalUtil.get();
-        String uid= (String) map.get("uid");
-        long currentTime=System.currentTimeMillis();
-        String timeStamp=String.valueOf(currentTime);
-        file.transferTo(new File("D:\\code\\SoftWareProject\\backend\\src\\main\\resources\\static\\usr_pic\\"+uid+".png"));
-        String url="\\static\\usr_pic\\"+uid+".png";
-//        userService.updateAvatar(url);
-        return Result.success(url);
+        Map<String, Object> map = ThreadLocalUtil.get();
+        String uid = (String) map.get("uid");
+
+
+        String directoryPath = picDir.picLocPath;
+        System.out.println("0013245646"+directoryPath);
+        String fileNamePrefix = uid+"00";
+        File directory = new File(directoryPath);
+
+        // 检查usr_pic目录下是否有以uid为前缀的png文件
+        File[] files = directory.listFiles((dir, name) -> name.startsWith(fileNamePrefix) && name.endsWith(".png"));
+
+        if (files != null && files.length > 0) {
+            // 存在符合条件的文件
+            File originalFile = files[0];
+            String originalFileName = originalFile.getName();
+            String lastTwoDigits = originalFileName.substring(originalFileName.length() - 6, originalFileName.length() - 4);
+            int newSuffix = (Integer.parseInt(lastTwoDigits) + 1) % 100;
+            String newFileName = uid + String.format("%02d", newSuffix) + ".png";
+
+            File newFile = new File(directoryPath + newFileName);
+            originalFile.delete();
+
+            file.transferTo(newFile);
+            String url = picDir.picReqPath + newFileName;
+            // userService.updateAvatar(url);
+
+            return Result.success(url);
+        } else {
+            // 不存在符合条件的文件
+            String newFileName = fileNamePrefix + ".png";
+            File newFile = new File(directoryPath + newFileName);
+
+            file.transferTo(newFile);
+            String url = picDir.picReqPath + newFileName;
+            // userService.updateAvatar(url);
+
+            return Result.success(url);
+        }
     }
+}
+
+@Component
+class usrPicDir{
+    @Value("${local-img.r-path}")
+    public String picReqPath; // 请求地址
+    @Value("${local-img.save-path}")
+    public String picLocPath; // 本地存放资源目录的绝对路径
 }
