@@ -11,18 +11,87 @@ let students = ref([]);
 let nodes = ref([]);
 let links = ref([]);
 let results = ref([]);
-let selectNodeType=ref(0);//0老师，1学生
-let selectNodeId=ref("");
+let selectNodeType = ref(0);//2老师，1学生
+let selectNodeId = ref("");
+let isMyTree=true;
 
-
-results.value = [
-    { img: '', name: '张三', id: '987654321', email: 'zhangsan@example.com' },
-    { img: '', name: '李四', id: '123456789', email: 'lisi@example.com' },
-]
-
-me.value = [{ name: '王五',id:"123456789",level:-1,startTime:"",endTime:"", type: 0 }];
-teachers.value = [{ name: '李四',id:"123456789",level:0,startTime:"2015-05",endTime:"2017-06",type: 1 }];
-students.value = [{ name: '张三',id:"123456789",level:1,startTime:"2020-02",endTime:"2023-06",type: 2 }];
+me.value = [{
+    "uid": "100000002",
+    "type": "0",
+    "relationships": [],
+    "myPage": null,
+    "name": "钱二"
+}];
+teachers.value = [{
+    "uid": "100000001",
+    "type": "1",
+    "relationships": [
+        {
+            "level": "2",
+            "startTime": "2010-05",
+            "endTime": "2012-05"
+        },
+        {
+            "level": "0",
+            "startTime": "2004-05",
+            "endTime": "2008-05"
+        }
+    ],
+    "myPage": "http://localhost/mypage",
+    "name": "张三"
+},
+{
+    "uid": "100000003",
+    "type": "1",
+    "relationships": [
+        {
+            "level": "1",
+            "startTime": "2008-05",
+            "endTime": "2010-05"
+        }
+    ],
+    "myPage": null,
+    "name": "孙三"
+}];
+students.value = [{
+    "uid": "100000004",
+    "type": "2",
+    "relationships": [
+        {
+            "level": "0",
+            "startTime": "2012-05",
+            "endTime": "2014-05"
+        }
+    ],
+    "myPage": null,
+    "name": "李四"
+},
+{
+    "uid": "100000005",
+    "type": "2",
+    "relationships": [
+        {
+            "level": "1",
+            "startTime": "2016-06",
+            "endTime": "2020-06"
+        }
+    ],
+    "myPage": null,
+    "name": "周五"
+},
+{
+    "uid": "100000008",
+    "type": "2",
+    "relationships": [
+        {
+            "level": "0",
+            "startTime": "2018-02",
+            "endTime": "2018-06"
+        }
+    ],
+    "myPage": null,
+    "name": "冯八"
+}];
 nodes.value = [
     { name: '张三' },
     { name: '李四' },
@@ -133,9 +202,11 @@ function drawChart(newStudents, newTeachers, me) {
         .attr('stroke-width', 2) // 设置节点边框宽度为2
         .style('pointer-events', 'all') // 设置鼠标事件在整个节点区域内生效
         .on('contextmenu', (event, d) => {
-            if(d.type==0){return}
+            if (d.type == 0) { return }
+            selectNodeId = d.uid;
+            selectNodeType = d.type;
             name = d.name;
-            console.log(name);
+            console.log(selectNodeId, selectNodeType)
             event.preventDefault();
 
             // 显示菜单
@@ -244,7 +315,61 @@ const showTree = (resultNumber) => {
     selectedResult = -1;
 }
 
-const search = () => {
+//获取师承树
+import {getTreeService} from "@/api/tree"
+import {usrInfoStore} from "@/stores/token"
+const getTree=async(uid)=>{
+    console.log(uid)
+    let getJson={
+        uid:uid
+    }
+    let response = await getTreeService(getJson)
+    
+    console.log(response.data)
+}
+const infoStroe=usrInfoStore();
+getTree(infoStroe.usrInfo.uid);
+
+import { searchUsersService } from "@/api/user"
+import { ElMessage } from 'element-plus';
+
+function getType(id) {
+    if (/^\d{9}$/.test(id)) {
+        return 1; // uid
+    } else if (/^\d{11}$/.test(id)) {
+        return 2; // 手机号
+    } else {
+        return 0; // 姓名
+    }
+}
+
+const search = async () => {
+    if(searchKeyword.value===''){
+        ElMessage.error("请输入值")
+        return
+    }
+
+    let searchJson = {
+        id: searchKeyword.value,
+        type: getType(searchKeyword.value)
+    }
+    let response = await searchUsersService(searchJson);
+    console.log(response.data)
+    results.value = response.data
+    console.log(results.value)
+    results.value = results.value.map(item => {
+            let usrPic = item.usrPic;
+            if (usrPic) {
+                usrPic = usrPic.replace(/\\/g, '/').replace(/^/, 'http://localhost:9090');
+            } else {
+                usrPic = null;
+            }
+            return {
+                ...item,
+                usrPic: usrPic
+            };
+        });
+    console.log(results.value)
 
 }
 
@@ -307,17 +432,17 @@ onMounted(() => {
                 <el-button @click="search">搜索</el-button>
             </div>
             <div id="searchResult" class="search-result">
-                <el-card v-for="(result, index) in results" :key="result.id" class="result_box"
+                <el-card v-for="(result, index) in results" :key="result.uid" class="result_box"
                     @click="selectResult(index + 1)" @dblclick="showTree(index + 1)">
                     <div slot="header" class="avatar">
                         <!-- <img :src="result.img" alt="头像"> -->
-                        <img v-if="result.img" :src="result.img" alt="头像" />
+                        <img v-if="result.usrPic" :src="result.usrPic" alt="头像" />
                         <img v-else :src="avatar" alt="头像" />
                     </div>
                     <div class="info">
                         <div class="top-info">
                             <p>姓名：{{ result.name }}</p>
-                            <p>ID：{{ result.id }}</p>
+                            <p>UID：{{ result.uid }}</p>
                         </div>
                         <div class="bottom-info">
                             <p>邮箱：{{ result.email }}</p>

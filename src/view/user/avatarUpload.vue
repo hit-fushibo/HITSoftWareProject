@@ -17,8 +17,6 @@ const getAvatarUrl = async () => {
         console.log(imgUrl.value)
     }
 }
-import { useTokenStore } from '@/stores/token.js'
-const tokenStore = useTokenStore()
 //图片上传成功的回调
 const uploadSuccess = (result) => {
     //回显图片

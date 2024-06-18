@@ -14,12 +14,37 @@ import {
 import avatar from '@/assets/logo.svg'
 import { ref } from "vue"
 
+const usrInfo=ref({
+    uid:"",
+    phone:"",
+    email:"",
+    name:"",
+    nickname:"",
+    usrPic:"",
+    myPage:""
+})
+
 const name = ref('default name')
 
 let teachers = ref([])
 let students = ref([])
 let me = ref({})
 let isMe = ref(true)
+
+//获取个人信息
+import {getUserInfoService} from "@/api/user"
+import {usrInfoStore,usrTokenStore} from "@/stores/token"
+const infoStore=usrInfoStore()
+const tokenStore=usrTokenStore();
+const getUsrInfo= async ()=>{
+    let response = await getUserInfoService();
+    usrInfo.value= response.data
+    //使用pinia持久化用户数据
+    infoStore.setUsrInfo(usrInfo.value)
+    console.log(usrInfo.value)
+}
+getUsrInfo()
+
 
 //dropDown条目被点击后，回调的函数
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -39,6 +64,8 @@ const handleCommand = (command) => {
         ).then(async () => {
             //用户点击了确认
             //清空pinia中的token和个人信息
+            infoStore.info={}
+            tokenStore.token=''
             //跳转到登录页
             router.push('/login')
         }).catch(() => {
@@ -105,7 +132,7 @@ const handleCommand = (command) => {
         <el-container>
             <!-- 头部区域 -->
             <el-header>
-                <div>您好： <strong>{{ name }}</strong></div>
+                <div>您好： <strong>{{ usrInfo.name }}</strong></div>
                 <el-dropdown placement="bottom-end" @command="handleCommand">
                     <span class="el-dropdown__box">
                         <el-avatar :src="avatar" />
