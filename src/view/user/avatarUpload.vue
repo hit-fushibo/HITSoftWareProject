@@ -4,8 +4,29 @@ import { ref } from 'vue'
 import avatar from '@/assets/logo.svg'
 const uploadRef = ref()
 //用户头像地址
-const imgUrl = avatar
-console.log(avatar)
+let imgUrl = ref()
+
+//获得用户头像地址
+import { getAvatarUrlService } from "@/api/avatar"
+
+const getAvatarUrl = async () => {
+    let response = await getAvatarUrlService();
+    console.log(response)
+    if (response.data.usrPic && response.data.usrPic !== "") {
+        imgUrl.value = "http://localhost:9090" + response.data.usrPic
+        console.log(imgUrl.value)
+    }
+}
+import { useTokenStore } from '@/stores/token.js'
+const tokenStore = useTokenStore()
+//图片上传成功的回调
+const uploadSuccess = (result) => {
+    //回显图片
+    imgUrl.value = "http://localhost:9090" +result.data
+    console.log(imgUrl.value)
+}
+getAvatarUrl()
+
 </script>
 <template>
     <el-card class="page-container">
@@ -16,7 +37,9 @@ console.log(avatar)
         </template>
         <el-row>
             <el-col :span="12">
-                <el-upload ref="uploadRef" class="avatar-uploader" :show-file-list="false">
+                <el-upload ref="uploadRef" class="avatar-uploader" :show-file-list="false" :auto-upload="true"
+                    action="/api/user/uploadAvatar" name="file" :headers="{ 'Authorization': tokenStore.token }"
+                    :on-success="uploadSuccess">
                     <img v-if="imgUrl" :src="imgUrl" class="avatar" />
                     <img v-else :src="avatar" width="278" />
                 </el-upload>
