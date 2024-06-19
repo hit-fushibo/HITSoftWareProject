@@ -1,120 +1,66 @@
 <script lang="ts" setup>
 import { User, Lock } from "@element-plus/icons-vue"
-import { reactive, ref } from 'vue'
-import { ElMessage, type ComponentSize, type FormInstance, type FormRules } from 'element-plus'
-import {useRouter} from 'vue-router'
-import {usrTokenStore} from "@/stores/token.js"
-//调用useTokenStore得到状态
-const tokenStore=usrTokenStore();
+import { ref } from 'vue'
+import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
+import { usrTokenStore } from "@/stores/token.js"
+import { userRegisterService, userLoginService } from "@/api/user.js"
+
+
+//调用useTokenStore用于保存JWT令牌
+const tokenStore = usrTokenStore();
 
 //控制注册和登录表单显示
 let isRegister = ref(false)
-//绑定数据
+//绑定登录表单数据
 const login_id = ref("")
 const login_pwd = ref("")
-
+//绑定注册表单数据
 const singUp_phone = ref("")
 const singUp_pwd = ref("")
 const singUp_pwd_confirm = ref("")
-//设置校验规则
-interface registerRuleForm {
-    phone: string
-    pwd: string
-    pwd_confirm: string
-}
-
-interface loginRuleForm {
-    id: string
-    pwd: string
-}
-
-const checkPhone = (rule: any, value: any, callback: any) => {
-    const phonePattern = /^\d{11}$/;
-    if (!phonePattern.test(value)) {
-        callback(new Error('手机号只能为11位数字'))
-    } else {
-        callback()
-    }
-}
-
-//校验二次密码
-const checkRePwd = (rule: any, value: any, callback: any) => {
-    if (value === '') {
-        callback(new Error('请再次确认密码'))
-    } else if (value !== singUp_pwd.value) {
-        callback(new Error("两次密码不匹配"))
-    } else {
-        callback()
-    }
-}
-
-const registerRules = reactive<FormRules<registerRuleForm>>({
-    phone: [
-        { required: true, message: "请输入手机号", trigger: "blur" },
-        { validator: checkPhone, trigger: "blur" }
-    ],
-    pwd: [
-        { required: true, message: "请输入密码", trigger: "blur" },
-    ],
-    pwd_confirm: [
-        { validator: checkRePwd, trigger: "blur" }
-    ]
-})
-
-const checkId = (rule: any, value: any, callback: any) => {
-    if (value.length !== 11 && value.length !== 9) {
-        callback(new Error('登录id只能为9位uid或11位手机号'))
-    } else {
-        callback()
-    }
-}
-
-const loginRules = reactive<FormRules<loginRuleForm>>({
-    id: [
-        { required: true, message: "请输入uid/手机号", trigger: "blur" },
-        { validator: checkId, trigger: "blur" }
-    ],
-    pwd: [
-        { required: true, message: "请输入密码", trigger: "blur" },
-    ]
-})
-
-
-import {userRegisterService,userLoginService} from "@/api/user.js"
+//路由管理
+const router = useRouter();
 
 const singUp = async () => {
+    //获得数据
     let phone = singUp_phone.value
     let pwd = singUp_pwd.value
     let pwd_confirm = singUp_pwd_confirm.value
+    //数据校验
     const phonePattern = /^\d{11}$/;
     if (!phonePattern.test(phone)) {
-        alert("手机号必须为11位数字")
+        ElMessage.error("手机号必须为11位数字")
         return
     }
     if (pwd !== pwd_confirm) {
-        alert("两次密码需要相同")
+        ElMessage.error("两次密码需要相同")
         return
     }
-    let registerData={
-        userPhone:phone,
-        password:pwd
+    //请求数据封装
+    let registerData = {
+        userPhone: phone,
+        password: pwd
     }
-    console.log(registerData)
+    //向后端发送注册请求
     let response = await userRegisterService(registerData)
-    if(response.code!==0){
-        alert(response.message);
+    //处理后端响应
+    if (response.code !== 0) {
+        //重复手机号
+        ElMessage.error(response.message);
     }
     else {
-        alert("注册成功")
-        login_id.value=phone
-        login_pwd.value=pwd
-        isRegister.value=false
+        //成功注册
+        ElMessage.success("注册成功")
+        login_id.value = phone
+        login_pwd.value = pwd
+        isRegister.value = false
     }
 }
 
-const router = useRouter();
 
-const login = async ()=>{
+
+const login = async () => {
     let id = login_id.value
     let pwd = login_pwd.value
     let pori = 0
@@ -125,21 +71,21 @@ const login = async ()=>{
         pori = 1
     }
     else {
-        alert("登录id只能为9位uid或11位手机号")
+        ElMessage.error("登录id只能为9位uid或11位手机号")
         return
     }
     if (pwd.length === 0) {
-        alert("请输入密码")
+        ElMessage.error("请输入密码")
         return
     }
-    let loginData={
-        id:id,
-        password:pwd,
-        pori:pori
+    let loginData = {
+        id: id,
+        password: pwd,
+        pori: pori
     }
     let response = await userLoginService(loginData)
-    if(response.code!==0){
-        alert(response.message);
+    if (response.code !== 0) {
+        ElMessage.error(response.message);
     }
     else {
         //借助路由完成跳转
@@ -147,7 +93,7 @@ const login = async ()=>{
         ElMessage.success("登录成功")
         router.push('/')
     }
-    
+
 }
 
 </script>
@@ -206,14 +152,8 @@ const login = async ()=>{
                     </el-form-item>
                 </el-form>
             </el-col>
-
-
         </el-row>
-
     </div>
-
-
-
 </template>
 
 <style scoped>

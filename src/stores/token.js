@@ -24,21 +24,21 @@ export const usrTokenStore = defineStore("token", () => {
         removeToken,
     };
 },
-{
-    persist:true
-}
+    {
+        persist: true
+    }
 );
 
 export const usrInfoStore = defineStore("usrInfo", () => {
     //1.定义描述token
     const usrInfo = ref({
-        uid:"",
-        phone:"",
-        email:"",
-        name:"",
-        nickname:"",
-        usrPic:"",
-        myPage:""
+        uid: "",
+        phone: "",
+        email: "",
+        name: "",
+        nickname: "",
+        usrPic: "",
+        myPage: ""
     })
     //2.定义修改token的方法
     const setUsrInfo = (newUsrInfo) => {
@@ -54,7 +54,7 @@ export const usrInfoStore = defineStore("usrInfo", () => {
         removeUsrInfo,
     };
 },
-{
-    persist:true
-}
+    {
+        persist: true
+    }
 );

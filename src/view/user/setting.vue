@@ -1,5 +1,11 @@
 <script setup>
-import { ref ,onMounted} from 'vue'
+import { ref } from 'vue'
+import { updateUserInfoService } from "@/api/user.js"
+import { ElMessage } from 'element-plus';
+import { usrInfoStore } from "@/stores/token"
+
+
+//表单数据
 const userInfo = ref({
     uid: 100000001,
     name: 'zhangsan',
@@ -7,8 +13,10 @@ const userInfo = ref({
     phone: '12345678910',
     email: 'zs@163.com',
     myPage: 'http://localhost/mypage',
-    usrPic:""
+    usrPic: ""
 })
+
+//表单数据校验
 const rules = {
     name: [
         { required: true, message: '请输入用户昵称', trigger: 'blur' }
@@ -33,19 +41,23 @@ const rules = {
     ]
 }
 
-import {getUserInfoService,updateUserInfoService} from "@/api/user.js"
-import { ElMessage } from 'element-plus';
-import {usrInfoStore} from "@/stores/token"
-const infoStore=usrInfoStore()
-const getUserInfo=()=>{
-    userInfo.value=infoStore.usrInfo;
+
+const infoStore = usrInfoStore()
+
+//获取用户信息
+const getUserInfo = () => {
+    userInfo.value = infoStore.usrInfo;
 }
 
-const updateUserInfo=async ()=>{
-    let response=await updateUserInfoService(userInfo.value)
+
+//更新用户信息
+const updateUserInfo = async () => {
+    let response = await updateUserInfoService(userInfo.value)
     infoStore.setUsrInfo(userInfo.value)
     ElMessage.success("成功修改")
 }
+
+//初始化用户信息
 getUserInfo();
 </script>
 <template>
@@ -67,7 +79,7 @@ getUserInfo();
                     <el-form-item label="用户昵称" prop="nickname">
                         <el-input v-model="userInfo.nickname"></el-input>
                     </el-form-item>
-                    
+
                     <el-form-item label="用户邮箱" prop="email">
                         <el-input v-model="userInfo.email"></el-input>
                     </el-form-item>

@@ -3,13 +3,26 @@ import { ref, onMounted, computed, reactive } from 'vue'
 import * as d3 from "d3";
 import avatar from '@/assets/logo.svg'
 import {
-    Check,
     Delete,
     Edit
 } from '@element-plus/icons-vue'
+import { searchUsersService } from "@/api/user"
+import { ElMessage } from 'element-plus';
+import { getTreeService } from "@/api/tree"
+import { usrInfoStore } from "@/stores/token"
+import {
+    addMyStudentService, addMyTeacherService,
+    addOthersStudentService, addOthersTeacherService,
+    delMyStudentService, delMyTeacherService,
+    delOthersStudentService, delOthersTeacherService,
+    modifyMyTreeService, modifyOthersTreeService
+} from "@/api/process"
+import { ElMessageBox } from 'element-plus'
 
-let selectedResult = -1;
+//获取本地pinia存储
+const infoStore = usrInfoStore();
 
+//添加弹窗及添加逻辑所需知道的内容
 let addType = ref(0);//1-添加学生2-添加老师
 let addName = ref("");//添加的姓名
 let addUid = ref("");//添加的uid
@@ -17,11 +30,14 @@ let addToUid = ref("");//被添加的人的Uid
 let addToName = ref("");//被添加人的姓名
 let addTableVisible = ref(false);//添加弹窗可视化控制
 
+//添加弹窗中的From数据
 const addFrom = reactive({
     level: '',
     startTime: '',
     endTime: ''
 })
+
+//添加弹窗中的层次下拉菜单项
 const addOptions = [
     {
         value: '0',
@@ -37,6 +53,7 @@ const addOptions = [
     }
 ]
 
+//日期选择器的回调函数，用于格式化日期
 const handleStartDateChange = (value) => {
     if (value) {
         // 将日期转换为指定格式 YYYYMM
@@ -57,6 +74,36 @@ const handleEndDateChange = (value) => {
     }
 }
 
+//计算属性，用于渲染添加弹窗标题
+const addTitle = computed(() => {
+    if (addType.value === 1) {
+        return "添加学生"
+    }
+    else if (addType.value === 2) {
+        return "添加老师"
+    }
+    else {
+        return "未初始化"
+    }
+})
+
+//修改弹窗及修改操作所需的内容
+let modifyName = ref("");//编辑的姓名
+let modifyUid = ref("");//编辑的uid
+let modifyToUid = ref("");//被编辑的人的Uid
+let modifyToName = ref("");//被编辑人的姓名
+let modifyRel = ref([]);//被编辑人与编辑人的师生关系
+let modifyTableVisible = ref(false);//编辑弹窗可视化控制
+let inModifyTableVisible = ref(false)
+
+//修改弹窗中的From数据
+const modifyFrom = reactive({
+    level: '',
+    startTime: '',
+    endTime: ''
+})
+
+//日期选择器回调函数
 const handleStartDateChangeM = (value) => {
     if (value) {
         // 将日期转换为指定格式 YYYYMM
@@ -77,20 +124,7 @@ const handleEndDateChangeM = (value) => {
     }
 }
 
-
-let modifyName = ref("");//编辑的姓名
-let modifyUid = ref("");//编辑的uid
-let modifyToUid = ref("");//被编辑的人的Uid
-let modifyToName = ref("");//被编辑人的姓名
-let modifyRel = ref([]);//被编辑人与编辑人的师生关系
-let modifyTableVisible = ref(false);//编辑弹窗可视化控制
-let inModifyTableVisible = ref(false)
-const modifyFrom = reactive({
-    level: '',
-    startTime: '',
-    endTime: ''
-})
-
+// 删除弹窗及删除操作所需内容
 let delType = ref(0);//1-删除学生2-删除老师
 let delName = ref("");//删除的姓名
 let delUid = ref("");//删除的uid
@@ -98,28 +132,7 @@ let delToUid = ref("");//被删除的人的Uid
 let delToName = ref("");//被删除人的姓名
 let delTableVisible = ref(false);//删除弹窗可视化控制
 
-
-const years = computed(() => {
-    const currentYear = new Date().getFullYear();
-    return Array.from({ length: currentYear - 1949 }, (_, index) => (currentYear - index).toString());
-})
-
-const months = computed(() => {
-    return Array.from({ length: 12 }, (_, index) => (index + 1).toString().padStart(2, '0'));
-})
-
-const addTitle = computed(() => {
-    if (addType.value === 1) {
-        return "添加学生"
-    }
-    else if (addType.value === 2) {
-        return "添加老师"
-    }
-    else {
-        return "未初始化"
-    }
-})
-
+//计算属性，用于渲染删除弹窗标题
 const delTitle = computed(() => {
     if (delType.value === 1) {
         return "删除学生"
@@ -132,20 +145,32 @@ const delTitle = computed(() => {
     }
 })
 
+//绑定搜索框输入
 let searchKeyword = ref('');
+//搜索结果
+let results = ref([]);
+//标记搜索结果序号
+let selectedResult = -1;
+
+//师承树渲染所需数据
 let me = [];
 let teachers = [];
 let students = [];
 let nodes = [];
 let links = [];
-let results = ref([]);
+
+
+//其他所需数据
 let isMyTree = true;
 let currentTreeUid = "";
 let currentTreeName = "";
 
-const r = 30;
-let name = '';
 
+//师承树节点大小
+const r = 30;
+
+
+//计算节点之间连线起止位置
 function cul(x1, y1, r1, x2, y2, r2) {
 
     let dx = x2 - x1;
@@ -172,6 +197,8 @@ function cul(x1, y1, r1, x2, y2, r2) {
     return [sx, sy, dx, dy];
 
 }
+
+//渲染师承树
 function drawChart() {
 
     nodes = []
@@ -186,8 +213,6 @@ function drawChart() {
     });
 
     links = teacherLinks.concat(studentLinks);
-
-    console.log(nodes, links)
 
     const container = document.getElementById('tree'); // 获取容器元素
     container.innerHTML = ''; // 清空容器中的所有子元素
@@ -264,7 +289,6 @@ function drawChart() {
             }
 
             modifyRel.value = d.relationships;
-            console.log(d.relationships, modifyRel.value)
             event.preventDefault();
 
             // 显示菜单
@@ -323,6 +347,8 @@ function drawChart() {
         })
     );
 }
+
+// 单击搜索结果的回调
 const selectResult = (resultNumber) => {
     // 取消先前选中的结果样式
     if (selectedResult >= 0) {
@@ -353,6 +379,7 @@ const selectResult = (resultNumber) => {
 
 }
 
+// 双击搜索结果的回调
 const showTree = (resultNumber) => {
 
     // 标记选中的结果
@@ -390,9 +417,8 @@ const showTree = (resultNumber) => {
     getTree(id)
 }
 
+
 //获取师承树
-import { getTreeService } from "@/api/tree"
-import { usrInfoStore } from "@/stores/token"
 const getTree = async (uid) => {
     console.log(uid)
     let getJson = {
@@ -418,12 +444,8 @@ const getTree = async (uid) => {
     console.log(students)
     drawChart();
 }
-const infoStore = usrInfoStore();
 
-
-import { searchUsersService } from "@/api/user"
-import { ElMessage } from 'element-plus';
-
+//判断用户根据什么进行搜索
 function getType(id) {
     if (/^\d{9}$/.test(id)) {
         return 1; // uid
@@ -434,6 +456,7 @@ function getType(id) {
     }
 }
 
+//搜索按钮回调
 const search = async () => {
     if (searchKeyword.value === '') {
         ElMessage.error("请输入值")
@@ -460,10 +483,9 @@ const search = async () => {
             usrPic: usrPic
         };
     });
-    console.log(results.value)
-
 }
 
+//添加学生按钮回调
 const addStudentOnClick = () => {
     console.log(selectedResult)
     if (selectedResult < 0) {
@@ -488,6 +510,7 @@ const addStudentOnClick = () => {
 
 }
 
+//添加老师回调
 const addTeachertOnClick = () => {
     console.log(selectedResult)
     if (selectedResult < 0) {
@@ -509,30 +532,25 @@ const addTeachertOnClick = () => {
     addToUid = currentTreeUid
 
     addTableVisible.value = true;
-
 }
 
+//右键菜单修改点击回调
 const modifyOnClicked = () => {
     modifyTableVisible.value = true
 }
 
+//右键菜单删除点击回调
 const delOnClicked = () => {
     delTableVisible.value = true
 }
 
+//修改弹窗中修改按钮回调
 const editOnClicked = (level) => {
     modifyFrom.level = level
     inModifyTableVisible.value = true
 }
 
-import {
-    addMyStudentService, addMyTeacherService,
-    addOthersStudentService, addOthersTeacherService,
-    delMyStudentService, delMyTeacherService,
-    delOthersStudentService, delOthersTeacherService,
-    modifyMyTreeService, modifyOthersTreeService
-} from "@/api/process"
-
+//添加弹窗中添加按钮回调
 const add = async () => {
     let Level = addFrom.level
     let StartTime = addFrom.startTime
@@ -594,6 +612,7 @@ const add = async () => {
     addTableVisible.value = false
 }
 
+//修改起始时间弹窗中修改按钮回调
 const modify = async () => {
     let Level = modifyFrom.level
     let StartTime = modifyFrom.startTime
@@ -643,6 +662,7 @@ const modify = async () => {
     inModifyTableVisible.value = false
 }
 
+//删除弹窗中删除逻辑
 const del = async (level) => {
     let Level = level
 
@@ -683,8 +703,8 @@ const del = async (level) => {
     }
     ElMessage.success("已添加申请，等待对方同意")
 }
-import { ElMessageBox } from 'element-plus'
-//删除师生关系
+
+//删除弹窗中删除按钮回调，用户二次确认
 const deleteOnClicked = (level) => {
     ElMessageBox.confirm(
         '你确认删除该师生关系吗？ ',
@@ -707,11 +727,13 @@ const deleteOnClicked = (level) => {
     })
 }
 
+//右键菜单隐藏逻辑
 d3.select(document).on('click', () => {
     // 隐藏菜单栏
     d3.select('.context-menu').style('display', 'none');
 });
 
+//组件加载时的逻辑
 onMounted(() => {
     currentTreeUid = infoStore.usrInfo.uid;
     currentTreeName = infoStore.usrInfo.name;

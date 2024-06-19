@@ -1,7 +1,7 @@
 <template>
     <div class="container">
-    <img :src="currentImage" alt="wife image" class="image" />
-  </div>
+        <img :src="currentImage" alt="wife image" class="image" />
+    </div>
 </template>
 
 <script>
@@ -51,15 +51,15 @@ export default {
 
 <style scoped>
 .container {
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .image {
-  max-width: 100%;
-  max-height: 100%;
+    max-width: 100%;
+    max-height: 100%;
 }
 </style>

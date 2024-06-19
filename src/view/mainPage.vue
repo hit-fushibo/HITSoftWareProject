@@ -1,8 +1,5 @@
 <script setup>
 import {
-    Management,
-    Promotion,
-    UserFilled,
     User,
     Crop,
     EditPen,
@@ -11,9 +8,11 @@ import {
     StarFilled,
     Setting
 } from '@element-plus/icons-vue'
-import avatar from '@/assets/logo.svg'
-import { ref, onBeforeUnmount, onMounted, computed} from "vue"
-const isMainPageInit = ref(false)
+import { ref, computed } from "vue"
+import { getUserInfoService } from "@/api/user"
+import { usrInfoStore, usrTokenStore } from "@/stores/token"
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { useRouter } from 'vue-router'
 
 const usrInfo = ref({
     uid: "",
@@ -25,27 +24,19 @@ const usrInfo = ref({
     myPage: ""
 })
 
-const name = ref('default name')
-
-let teachers = ref([])
-let students = ref([])
-let me = ref({})
-let isMe = ref(true)
-
-const imgUrl=computed(()=>{
-    if(usrInfo.value.usrPic===''){
-        console.log(usrInfo.value.usrPic==='')
+const imgUrl = computed(() => {
+    if (usrInfo.value.usrPic === '') {
+        console.log(usrInfo.value.usrPic === '')
     }
-    
+
     console.log("http://localhost:9090" + usrInfo.value.usrPic)
     return "http://localhost:9090" + usrInfo.value.usrPic
 })
 
-//获取个人信息
-import { getUserInfoService } from "@/api/user"
-import { usrInfoStore, usrTokenStore } from "@/stores/token"
+
 const infoStore = usrInfoStore()
 const tokenStore = usrTokenStore();
+
 const getUsrInfo = async () => {
     let response = await getUserInfoService();
     usrInfo.value = response.data
@@ -53,12 +44,9 @@ const getUsrInfo = async () => {
     infoStore.setUsrInfo(usrInfo.value)
     console.log(usrInfo.value)
 }
-getUsrInfo()
-
 
 //dropDown条目被点击后，回调的函数
-import { ElMessage, ElMessageBox } from 'element-plus'
-import { useRouter } from 'vue-router'
+
 const router = useRouter()
 const handleCommand = (command) => {
     if (command === 'logout') {
@@ -93,10 +81,8 @@ const handleCommand = (command) => {
 
 //关闭页面清除缓存
 
-
-
-
-
+//获取个人信息
+getUsrInfo()
 </script>
 <template>
     <el-container class="layout-container">
@@ -151,7 +137,7 @@ const handleCommand = (command) => {
                 <div>您好： <strong>{{ usrInfo.name }}</strong></div>
                 <el-dropdown placement="bottom-end" @command="handleCommand">
                     <span class="el-dropdown__box">
-                        <el-avatar v-if="usrInfo.usrPic===''">{{ usrInfo.name }}</el-avatar>
+                        <el-avatar v-if="usrInfo.usrPic === ''">{{ usrInfo.name }}</el-avatar>
                         <el-avatar v-else :src="imgUrl" />
                         <el-icon>
                             <CaretBottom />

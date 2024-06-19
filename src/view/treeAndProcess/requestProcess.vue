@@ -3,19 +3,28 @@ import {
   Check,
   Delete,
 } from '@element-plus/icons-vue'
+import { ref } from 'vue'
+import { reactive } from 'vue'
+import { getAllRequestService, acceptRequestService, refuseRequestService } from "@/api/process.js"
+import { ElMessage } from 'element-plus';
+
+
+//渲染申请表的数据
+
+//完整的申请数据
 let tableData = ref([]);
-
-let filterData=ref([]);
-
+//经过筛选条件过滤的申请数据
+let filterData = ref([]);
+//分页显示的数据
 let displayData = ref([]);
 
-
+//自定义序号回调函数
 function indexMethod(index) {
   return (currentPage.value - 1) * pageSize.value + index + 1;
 }
 
-import { ref } from 'vue'
 
+//分页条所需数据
 const currentPage = ref(1)
 const pageSize = ref(10)
 const small = ref(false)
@@ -29,73 +38,74 @@ const handleCurrentChange = (val: number) => {
   updateDisplayData();
 }
 
+//换页时修改显示数据
 function updateDisplayData() {
   const startIndex = (currentPage.value - 1) * pageSize.value;
   const endIndex = startIndex + pageSize.value;
   displayData.value = filterData.value.slice(startIndex, endIndex);
 }
 
-function filterDataQuery(){
-  filterData.value =tableData.value.filter(item=>{
-    if(formInline.uid && formInline.uid!==item.uid){
+//根据用户设置条件过滤申请
+function filterDataQuery() {
+  filterData.value = tableData.value.filter(item => {
+    if (formInline.uid && formInline.uid !== item.uid) {
       return false
     }
-    if(formInline.type){
-      if(formInline.type=='0' && (item.type=='00'||item.type=='10')){
+    if (formInline.type) {
+      if (formInline.type == '0' && (item.type == '0' || item.type == '0')) {
         return true
       }
-      else if(formInline.type=='1' && (item.type=='01'||item.type=='11')){
+      else if (formInline.type == '1' && (item.type == '1' || item.type == '1')) {
         return true
       }
-      else if(formInline.type=='2' && (item.type=='02'||item.type=='12')){
+      else if (formInline.type == '2' && (item.type == '2' || item.type == '2')) {
         return true
       }
-      else{
+      else {
         return false
       }
     }
     return true
   })
+  currentPage.value = 1;
   updateDisplayData();
 }
-import {getAllRequestService,acceptRequestService,refuseRequestService} from "@/api/process.js"
-const processButtonClick=async(rid,type)=>{
-  if(type===0){
-    let response=await acceptRequestService({rid:rid})
-    
+
+
+//同意或拒绝申请的回调
+const processButtonClick = async (rid, type) => {
+  if (type === 0) {
+    let response = await acceptRequestService({ rid: rid })
+    ElMessage.success("已同意该申请")
+
   }
-  else{
-    let response= await refuseRequestService({rid:rid})
+  else {
+
+    let response = await refuseRequestService({ rid: rid })
+    ElMessage.success("已拒绝该申请")
   }
-  tableData.value=tableData.value.filter(item=> item.requestId!==rid)
+
+  //删除该申请
+  tableData.value = tableData.value.filter(item => item.requestId !== rid)
   filterDataQuery()
 }
 
-
-const getRequestData=async ()=> {
-  let response =await getAllRequestService();
-  console.log(response.data)
+//获取用户所有申请
+const getRequestData = async () => {
+  let response = await getAllRequestService();
   tableData.value = response.data;
-  console.log(tableData.value)
   filterDataQuery();
   updateDisplayData();
 }
 
-
-import { reactive } from 'vue'
-
+//筛选框数据
 const formInline = reactive({
   uid: "",
   type: ""
 })
 
-const onSubmit = () => {
-  console.log('submit!')
-}
 //获取申请信息
 getRequestData()
-
-
 </script>
 
 
@@ -131,15 +141,15 @@ getRequestData()
           <el-table-column prop="fromUid" label="UID" />
           <el-table-column label="类型">
             <template #default="scope">
-              <span v-if="scope.row.type ==='0'">删除</span>
-              <span v-else-if="scope.row.type ==='1'">增加</span>
+              <span v-if="scope.row.type === '0'">删除</span>
+              <span v-else-if="scope.row.type === '1'">增加</span>
               <span v-else>修改</span>
             </template>
           </el-table-column>
           <el-table-column prop="description" label="内容" />
           <el-table-column label="操作" width="180" align="center" #default="scope">
-            <el-button type="success" :icon="Check" circle @click="processButtonClick(scope.row.rid,0)"/>
-            <el-button type="danger" :icon="Delete" circle @click="processButtonClick(scope.row.rid,1)"/>
+            <el-button type="success" :icon="Check" circle @click="processButtonClick(scope.row.rid, 0)" />
+            <el-button type="danger" :icon="Delete" circle @click="processButtonClick(scope.row.rid, 1)" />
           </el-table-column>
         </el-table>
 
@@ -149,8 +159,6 @@ getRequestData()
           @current-change="handleCurrentChange" />
       </div>
     </el-card>
-
-
   </div>
 </template>
 

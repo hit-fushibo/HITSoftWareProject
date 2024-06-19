@@ -3,7 +3,7 @@
 import axios from "axios";
 import { usrTokenStore } from "@/stores/token.js"
 import router from '@/router'
-import {ElMessage} from "element-plus"
+import { ElMessage } from "element-plus"
 
 const baseURL = "/api"
 const instance = axios.create({ baseURL })

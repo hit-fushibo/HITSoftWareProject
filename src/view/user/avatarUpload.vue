@@ -5,7 +5,7 @@ import avatar from '@/assets/logo.svg'
 const uploadRef = ref()
 //用户头像地址
 let imgUrl = ref()
-let avatarUrl='';
+let avatarUrl = '';
 
 //获得用户头像地址
 import { getAvatarUrlService } from "@/api/avatar"
@@ -15,28 +15,28 @@ const getAvatarUrl = async () => {
     console.log(response)
     if (response.data.usrPic && response.data.usrPic !== "") {
         imgUrl.value = "http://localhost:9090" + response.data.usrPic
-        avatarUrl=response.data.usrPic
+        avatarUrl = response.data.usrPic
         console.log(imgUrl.value)
     }
 }
 //图片上传成功的回调
 const uploadSuccess = (result) => {
     //回显图片
-    imgUrl.value = "http://localhost:9090" +result.data
-    avatarUrl=result.data
+    imgUrl.value = "http://localhost:9090" + result.data
+    avatarUrl = result.data
     console.log(imgUrl.value)
 }
 
-import {updateAvatarService} from "@/api/avatar"
-const updateAvatar=async()=>{
+import { updateAvatarService } from "@/api/avatar"
+const updateAvatar = async () => {
     let response = await updateAvatarService(avatarUrl)
     ElMessage.success("成功上传")
-    userInfoStore.info.userPic=imgUrl.value
+    userInfoStore.info.userPic = imgUrl.value
 }
 
-import {usrTokenStore} from "@/stores/token"
+import { usrTokenStore } from "@/stores/token"
 import { ElMessage } from 'element-plus';
-const tokenStore=usrTokenStore();
+const tokenStore = usrTokenStore();
 getAvatarUrl()
 
 </script>
@@ -50,9 +50,8 @@ getAvatarUrl()
         <el-row>
             <el-col :span="12">
                 <el-upload ref="uploadRef" class="avatar-uploader" :show-file-list="false" :auto-upload="true"
-                    action="/api/user/uploadAvatar" name="file" :headers="{ 'Authorization': tokenStore.token }" :limit="1"
-                    :on-exceed="handleExceed"
-                    :on-success="uploadSuccess">
+                    action="/api/user/uploadAvatar" name="file" :headers="{ 'Authorization': tokenStore.token }"
+                    :limit="1" :on-exceed="handleExceed" :on-success="uploadSuccess">
                     <img v-if="imgUrl" :src="imgUrl" class="avatar" />
                     <img v-else :src="avatar" width="278" />
                 </el-upload>
