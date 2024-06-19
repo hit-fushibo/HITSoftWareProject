@@ -1,9 +1,0 @@
-spring:
-  application:
-    name: spring-boot
-  datasource:
-    driver-class-name: org.sqlite.JDBC
-    url: D:\\code\\SoftWareProject\\webapp
-
-server:
-  port: 9090
