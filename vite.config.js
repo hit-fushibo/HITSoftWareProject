@@ -14,6 +14,12 @@ export default defineConfig({
     }
   },
   server:{
+    host:'0.0.0.0',
+    // remote
+    // port:'8080',
+    // local
+    port:'5631',
+    open:false,
     proxy:{
       '/api':{
         target:"http://localhost:9090",
@@ -23,3 +29,5 @@ export default defineConfig({
     }
   }
 })
+
+

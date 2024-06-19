@@ -683,7 +683,7 @@ const del = async (level) => {
     }
     ElMessage.success("已添加申请，等待对方同意")
 }
-
+import { ElMessageBox } from 'element-plus'
 //删除师生关系
 const deleteOnClicked = (level) => {
     ElMessageBox.confirm(
