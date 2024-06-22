@@ -20,7 +20,7 @@ public class Users {
     public Users() {
     }
 
-    public Users(String uid, String pwd, String phone, String email, String name, String nickname, String usrPic,String myPage) {
+    public Users(String uid, String pwd, String phone, String email, String name, String nickname, String usrPic, String myPage) {
         this.uid = uid;
         this.pwd = pwd;
         this.phone = phone;
@@ -28,7 +28,7 @@ public class Users {
         this.name = name;
         this.nickname = nickname;
         this.usrPic = usrPic;
-        this.myPage=myPage;
+        this.myPage = myPage;
     }
 
     public Users(String uid, String phone, String email, String name, String nickname) {

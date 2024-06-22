@@ -23,12 +23,11 @@ public class TreeServiceImpl implements TreeService {
     public ArrayList<Node> getTree(String uid) {
         ArrayList<Node> nodes = treeMapper.getTree(uid);
         //解析nodes中的name和myPage
-        for(Node node:nodes){
-            Users u=userMapper.findByUid(node.getUid());
+        for (Node node : nodes) {
+            Users u = userMapper.findByUid(node.getUid());
             node.setName(u.getName());
             node.setMyPage(u.getMyPage());
         }
-
         return nodes;
     }
 }

@@ -9,8 +9,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.util.concurrent.TimeUnit;
-
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
     @Value("${local-img.request-path}")
@@ -24,7 +22,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         //登录和注册不拦截
-        registry.addInterceptor(loginInterceptors).excludePathPatterns("/user/login","/user/register","/static/**","/error",picReqPath);
+        registry.addInterceptor(loginInterceptors).excludePathPatterns("/user/login", "/user/register", "/static/**", "/error", picReqPath);
     }
 
     @Override

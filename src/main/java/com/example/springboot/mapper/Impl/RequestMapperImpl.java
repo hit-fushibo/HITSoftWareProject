@@ -22,19 +22,17 @@ public class RequestMapperImpl implements RequestMapper {
     @Override
     public int addMyStudent(String addUid, String level, String startTime, String endTime) {
         dbUtil.getConnection();
-        Map<String,Object> map= ThreadLocalUtil.get();
-        String uid=(String) map.get("uid");
-
+        Map<String, Object> map = ThreadLocalUtil.get();
+        String uid = (String) map.get("uid");
         //检查是否有同样作用的请求，自己已经申请过或者别人给自己申请过
-        if(isRepeatOfMyRequest(addUid,"11",level)==1) {
+        if (isRepeatOfMyRequest(addUid, "11", level) == 1) {
             dbUtil.close();
             return 1;
         }
-
-        String rid= TimeStamp.getTimeStamp();
-        String rType="011";
-        String sql="insert into request (rid,uid,from_uid,to_uid,rtype,level,start_time,end_time) " +
-                "values ('"+rid+"','"+addUid+"','"+uid+"','"+uid+"','"+rType+"','"+level+"','"+startTime+"','"+endTime+"')";
+        String rid = TimeStamp.getTimeStamp();
+        String rType = "011";
+        String sql = "insert into request (rid,uid,from_uid,to_uid,rtype,level,start_time,end_time) " +
+                "values ('" + rid + "','" + addUid + "','" + uid + "','" + uid + "','" + rType + "','" + level + "','" + startTime + "','" + endTime + "')";
         dbUtil.executeUpdate(sql);
         dbUtil.close();
         return 0;
@@ -43,20 +41,20 @@ public class RequestMapperImpl implements RequestMapper {
     @Override
     public int addMyTeacher(String addUid, String level, String startTime, String endTime) {
         dbUtil.getConnection();
-        Map<String,Object> map= ThreadLocalUtil.get();
-        String uid=(String) map.get("uid");
+        Map<String, Object> map = ThreadLocalUtil.get();
+        String uid = (String) map.get("uid");
 
         //检查是否有同样作用的请求，自己已经申请过或者别人给自己申请过
-        if(isRepeatOfMyRequest(addUid,"12",level)==1){
+        if (isRepeatOfMyRequest(addUid, "12", level) == 1) {
             dbUtil.close();
             return 1;
         }
 
 
-        String rid= TimeStamp.getTimeStamp();
-        String rType="012";
-        String sql="insert into request (rid,uid,from_uid,to_uid,rtype,level,start_time,end_time) " +
-                "values ('"+rid+"','"+addUid+"','"+uid+"','"+uid+"','"+rType+"','"+level+"','"+startTime+"','"+endTime+"')";
+        String rid = TimeStamp.getTimeStamp();
+        String rType = "012";
+        String sql = "insert into request (rid,uid,from_uid,to_uid,rtype,level,start_time,end_time) " +
+                "values ('" + rid + "','" + addUid + "','" + uid + "','" + uid + "','" + rType + "','" + level + "','" + startTime + "','" + endTime + "')";
         dbUtil.executeUpdate(sql);
         dbUtil.close();
         return 0;
@@ -65,8 +63,8 @@ public class RequestMapperImpl implements RequestMapper {
     @Override
     public int addOthersStudent(String who, String addUid, String level, String startTime, String endTime) {
         dbUtil.getConnection();
-        Map<String,Object> map= ThreadLocalUtil.get();
-        String uid=(String) map.get("uid");
+        Map<String, Object> map = ThreadLocalUtil.get();
+        String uid = (String) map.get("uid");
         //检查是否已经是其的学生
 
         //检查是否为其的老师
@@ -74,16 +72,16 @@ public class RequestMapperImpl implements RequestMapper {
 
         //检查是否有同样作用的请求，其已经申请过或者别人给其申请过
         //检查其的请求中是否有同样的请求
-        if(isRepeatOfOthersRequest(who,addUid,"11",level)==1){
+        if (isRepeatOfOthersRequest(who, addUid, "11", level) == 1) {
             dbUtil.close();
             return 1;
         }
 
         //请求没有问题，添加请求
-        String rid= TimeStamp.getTimeStamp();
-        String rType="111";
-        String  sql="insert into request (rid,uid,from_uid,to_uid,rtype,level,start_time,end_time) " +
-                "values ('"+rid+"','"+who+"','"+uid+"','"+addUid+"','"+rType+"','"+level+"','"+startTime+"','"+endTime+"')";
+        String rid = TimeStamp.getTimeStamp();
+        String rType = "111";
+        String sql = "insert into request (rid,uid,from_uid,to_uid,rtype,level,start_time,end_time) " +
+                "values ('" + rid + "','" + who + "','" + uid + "','" + addUid + "','" + rType + "','" + level + "','" + startTime + "','" + endTime + "')";
         dbUtil.executeUpdate(sql);
         dbUtil.close();
         return 0;
@@ -92,109 +90,109 @@ public class RequestMapperImpl implements RequestMapper {
     @Override
     public int addOthersTeacher(String who, String addUid, String level, String startTime, String endTime) {
         dbUtil.getConnection();
-        Map<String,Object> map= ThreadLocalUtil.get();
-        String uid=(String) map.get("uid");
+        Map<String, Object> map = ThreadLocalUtil.get();
+        String uid = (String) map.get("uid");
         //检查是否已经是其的老师
         //检查是否为其的学生
 
 
         //检查是否有同样作用的请求，其已经申请过或者别人给其申请过
         //检查其的请求中是否有同样的请求
-        if(isRepeatOfOthersRequest(who,addUid,"12",level)==1){
+        if (isRepeatOfOthersRequest(who, addUid, "12", level) == 1) {
             dbUtil.close();
             return 1;
         }
 
         //请求没有问题，添加请求
-        String rid= TimeStamp.getTimeStamp();
-        String rType="112";
-        String sql="insert into request (rid,uid,from_uid,to_uid,rtype,level,start_time,end_time) " +
-                "values ('"+rid+"','"+who+"','"+uid+"','"+addUid+"','"+rType+"','"+level+"','"+startTime+"','"+endTime+"')";
+        String rid = TimeStamp.getTimeStamp();
+        String rType = "112";
+        String sql = "insert into request (rid,uid,from_uid,to_uid,rtype,level,start_time,end_time) " +
+                "values ('" + rid + "','" + who + "','" + uid + "','" + addUid + "','" + rType + "','" + level + "','" + startTime + "','" + endTime + "')";
         dbUtil.executeUpdate(sql);
         dbUtil.close();
         return 0;
     }
 
     @Override
-    public int delMyStudent(String delUid,String level) {
+    public int delMyStudent(String delUid, String level) {
         dbUtil.getConnection();
-        Map<String,Object> map= ThreadLocalUtil.get();
-        String uid=(String) map.get("uid");
+        Map<String, Object> map = ThreadLocalUtil.get();
+        String uid = (String) map.get("uid");
         //检查是否有同样作用的请求，自己已经申请过或者别人给自己申请过
         //检查自己的请求中是否有同样的请求
-        if(isRepeatOfMyRequest(delUid,"01",level)==1){
+        if (isRepeatOfMyRequest(delUid, "01", level) == 1) {
             dbUtil.close();
             return 1;
         }
         //请求没有问题，添加请求
 
-        String rid= TimeStamp.getTimeStamp();
-        String rType="001";
-        String sql="insert into request (rid,uid,from_uid,to_uid,rtype,level) " +
-                "values ('"+rid+"','"+delUid+"','"+uid+"','"+uid+"','"+rType+"','"+level+"')";
+        String rid = TimeStamp.getTimeStamp();
+        String rType = "001";
+        String sql = "insert into request (rid,uid,from_uid,to_uid,rtype,level) " +
+                "values ('" + rid + "','" + delUid + "','" + uid + "','" + uid + "','" + rType + "','" + level + "')";
         dbUtil.executeUpdate(sql);
         dbUtil.close();
         return 0;
     }
 
     @Override
-    public int delMyTeacher(String delUid,String level) {
+    public int delMyTeacher(String delUid, String level) {
         dbUtil.getConnection();
-        Map<String,Object> map= ThreadLocalUtil.get();
-        String uid=(String) map.get("uid");
+        Map<String, Object> map = ThreadLocalUtil.get();
+        String uid = (String) map.get("uid");
         //检查是否有同样作用的请求，自己已经申请过或者别人给自己申请过
-        if(isRepeatOfMyRequest(delUid,"02",level)==1){
+        if (isRepeatOfMyRequest(delUid, "02", level) == 1) {
             dbUtil.close();
             return 1;
         }
 
         //请求没有问题，添加请求
-        String rid= TimeStamp.getTimeStamp();
-        String rType="002";
-        String  sql="insert into request (rid,uid,from_uid,to_uid,rtype,level) " +
-                "values ('"+rid+"','"+delUid+"','"+uid+"','"+uid+"','"+rType+"','"+level+"')";
+        String rid = TimeStamp.getTimeStamp();
+        String rType = "002";
+        String sql = "insert into request (rid,uid,from_uid,to_uid,rtype,level) " +
+                "values ('" + rid + "','" + delUid + "','" + uid + "','" + uid + "','" + rType + "','" + level + "')";
         dbUtil.executeUpdate(sql);
         dbUtil.close();
         return 0;
     }
 
     @Override
-    public int delOthersStudent(String who, String delUid,String level) {
+    public int delOthersStudent(String who, String delUid, String level) {
         dbUtil.getConnection();
-        Map<String,Object> map= ThreadLocalUtil.get();
-        String uid=(String) map.get("uid");
+        Map<String, Object> map = ThreadLocalUtil.get();
+        String uid = (String) map.get("uid");
         //检查是否有同样作用的请求，其已经申请过或者别人给其申请过
-        if(isRepeatOfOthersRequest(who,delUid,"01",level)==1){
+        if (isRepeatOfOthersRequest(who, delUid, "01", level) == 1) {
             dbUtil.close();
             return 1;
         }
         //请求没有问题，添加请求
 
-        String rid= TimeStamp.getTimeStamp();
-        String rType="101";
-        String  sql="insert into request (rid,uid,from_uid,to_uid,rtype,level) " +
-                "values ('"+rid+"','"+who+"','"+uid+"','"+delUid+"','"+rType+"','"+level+"')";
+        String rid = TimeStamp.getTimeStamp();
+        String rType = "101";
+        String sql = "insert into request (rid,uid,from_uid,to_uid,rtype,level) " +
+                "values ('" + rid + "','" + who + "','" + uid + "','" + delUid + "','" + rType + "','" + level + "')";
         dbUtil.executeUpdate(sql);
         dbUtil.close();
         return 0;
     }
 
     @Override
-    public int delOthersTeacher(String who, String delUid,String level) {
+    public int delOthersTeacher(String who, String delUid, String level) {
         dbUtil.getConnection();
-        Map<String,Object> map= ThreadLocalUtil.get();
-        String uid=(String) map.get("uid");
+        Map<String, Object> map = ThreadLocalUtil.get();
+        String uid = (String) map.get("uid");
         //检查是否有同样作用的请求，其已经申请过或者别人给其申请过
-        if(isRepeatOfOthersRequest(who,delUid,"02",level)==1){
+        if (isRepeatOfOthersRequest(who, delUid, "02", level) == 1) {
             dbUtil.close();
             return 1;
         }
         //请求没有问题，添加请求
 
-        String rid= TimeStamp.getTimeStamp();
-        String rType="102";
-        String sql="insert into request (rid,uid,from_uid,to_uid,rtype,level) " +
-                "values ('"+rid+"','"+who+"','"+uid+"','"+delUid+"','"+rType+"','"+level+"')";
+        String rid = TimeStamp.getTimeStamp();
+        String rType = "102";
+        String sql = "insert into request (rid,uid,from_uid,to_uid,rtype,level) " +
+                "values ('" + rid + "','" + who + "','" + uid + "','" + delUid + "','" + rType + "','" + level + "')";
         dbUtil.executeUpdate(sql);
         dbUtil.close();
         return 0;
@@ -203,19 +201,19 @@ public class RequestMapperImpl implements RequestMapper {
     @Override
     public int modifyMyTree(String modifyUid, String level, String startTime, String endTime) {
         dbUtil.getConnection();
-        Map<String,Object> map= ThreadLocalUtil.get();
-        String uid=(String) map.get("uid");
+        Map<String, Object> map = ThreadLocalUtil.get();
+        String uid = (String) map.get("uid");
         //检查是否有同样作用的请求，自己已经申请过或者别人给自己申请过
-        if(isRepeatOfOthersRequest(uid,modifyUid,"20",level)==1){
+        if (isRepeatOfOthersRequest(uid, modifyUid, "20", level) == 1) {
             dbUtil.close();
             return 1;
         }
         //请求没有问题，添加请求
 
-        String rid= TimeStamp.getTimeStamp();
-        String rType="020";
-        String sql="insert into request (rid,uid,from_uid,to_uid,rtype,level,start_time,end_time) " +
-                "values ('"+rid+"','"+modifyUid+"','"+uid+"','"+uid+"','"+rType+"','"+level+"','"+startTime+"','"+endTime+"')";
+        String rid = TimeStamp.getTimeStamp();
+        String rType = "020";
+        String sql = "insert into request (rid,uid,from_uid,to_uid,rtype,level,start_time,end_time) " +
+                "values ('" + rid + "','" + modifyUid + "','" + uid + "','" + uid + "','" + rType + "','" + level + "','" + startTime + "','" + endTime + "')";
         dbUtil.executeUpdate(sql);
         dbUtil.close();
         return 0;
@@ -224,19 +222,19 @@ public class RequestMapperImpl implements RequestMapper {
     @Override
     public int modifyOthersTree(String who, String modifyUid, String level, String startTime, String endTime) {
         dbUtil.getConnection();
-        Map<String,Object> map= ThreadLocalUtil.get();
-        String uid=(String) map.get("uid");
+        Map<String, Object> map = ThreadLocalUtil.get();
+        String uid = (String) map.get("uid");
         //检查是否有同样作用的请求，其已经申请过或者别人给其申请过
-        if(isRepeatOfOthersRequest(who,modifyUid,"20",level)==1){
+        if (isRepeatOfOthersRequest(who, modifyUid, "20", level) == 1) {
             dbUtil.close();
             return 1;
         }
         //请求没有问题，添加请求
 
-        String rid= TimeStamp.getTimeStamp();
-        String rType="120";
-        String sql="insert into request (rid,uid,from_uid,to_uid,rtype,level,start_time,end_time) " +
-                "values ('"+rid+"','"+who+"','"+uid+"','"+modifyUid+"','"+rType+"','"+level+"','"+startTime+"','"+endTime+"')";
+        String rid = TimeStamp.getTimeStamp();
+        String rType = "120";
+        String sql = "insert into request (rid,uid,from_uid,to_uid,rtype,level,start_time,end_time) " +
+                "values ('" + rid + "','" + who + "','" + uid + "','" + modifyUid + "','" + rType + "','" + level + "','" + startTime + "','" + endTime + "')";
         dbUtil.executeUpdate(sql);
         dbUtil.close();
         return 0;
@@ -244,11 +242,11 @@ public class RequestMapperImpl implements RequestMapper {
 
     @Override
     public ArrayList<Requests> getAllRequests() {
-        Map<String,Object> map= ThreadLocalUtil.get();
-        String uid=(String) map.get("uid");
-        ArrayList<Requests> requests=new ArrayList<>();
+        Map<String, Object> map = ThreadLocalUtil.get();
+        String uid = (String) map.get("uid");
+        ArrayList<Requests> requests = new ArrayList<>();
         dbUtil.getConnection();
-        String sql="select * from request where uid='"+uid+"'";
+        String sql = "select * from request where uid='" + uid + "'";
         try (ResultSet rs = dbUtil.executeQuery(sql)) {
             String rid;
             String fromUid;
@@ -262,20 +260,19 @@ public class RequestMapperImpl implements RequestMapper {
             String startTime;
             String endTime;
             while (rs.next()) {
-                rid=rs.getString("rid");
-                fromUid=rs.getString("from_uid");
-                fromName="";
-                toUid=rs.getString("to_uid");
-                toName="";
-                level=rs.getString("level");
-                String rtype=rs.getString("rtype");
-                meRoOthers=String.valueOf(rtype.charAt(0));
-                type=String.valueOf(rtype.charAt(1));
-                sOrt=String.valueOf(rtype.charAt(2));
-                startTime=rs.getString("start_time");
-                endTime=rs.getString("end_time");
-
-                requests.add(new Requests(rid,fromUid,fromName,toUid,toName,level,meRoOthers,type,sOrt,startTime,endTime,""));
+                rid = rs.getString("rid");
+                fromUid = rs.getString("from_uid");
+                fromName = "";
+                toUid = rs.getString("to_uid");
+                toName = "";
+                level = rs.getString("level");
+                String rtype = rs.getString("rtype");
+                meRoOthers = String.valueOf(rtype.charAt(0));
+                type = String.valueOf(rtype.charAt(1));
+                sOrt = String.valueOf(rtype.charAt(2));
+                startTime = rs.getString("start_time");
+                endTime = rs.getString("end_time");
+                requests.add(new Requests(rid, fromUid, fromName, toUid, toName, level, meRoOthers, type, sOrt, startTime, endTime, ""));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -287,7 +284,7 @@ public class RequestMapperImpl implements RequestMapper {
     @Override
     public void refuseRequest(String rid) {
         dbUtil.getConnection();
-        String sql="delete from request where rid='"+rid+"'";
+        String sql = "delete from request where rid='" + rid + "'";
         dbUtil.executeUpdate(sql);
         dbUtil.close();
 
@@ -296,7 +293,7 @@ public class RequestMapperImpl implements RequestMapper {
     @Override
     public Requests acceptRequest(String rid) {
         dbUtil.getConnection();
-        String sql="select * from request where rid='"+rid+"'";
+        String sql = "select * from request where rid='" + rid + "'";
         try (ResultSet rs = dbUtil.executeQuery(sql)) {
             String fromUid;
             String fromName;
@@ -309,21 +306,21 @@ public class RequestMapperImpl implements RequestMapper {
             String startTime;
             String endTime;
             if (rs.next()) {
-                rid=rs.getString("rid");
-                fromUid=rs.getString("from_uid");
-                fromName="";
-                toUid=rs.getString("to_uid");
-                toName="";
-                level=rs.getString("level");
-                String rtype=rs.getString("rtype");
-                meRoOthers=String.valueOf(rtype.charAt(0));
-                type=String.valueOf(rtype.charAt(1));
-                sOrt=String.valueOf(rtype.charAt(2));
-                startTime=rs.getString("start_time");
-                endTime=rs.getString("end_time");
-                String uid=rs.getString("uid");
+                rid = rs.getString("rid");
+                fromUid = rs.getString("from_uid");
+                fromName = "";
+                toUid = rs.getString("to_uid");
+                toName = "";
+                level = rs.getString("level");
+                String rtype = rs.getString("rtype");
+                meRoOthers = String.valueOf(rtype.charAt(0));
+                type = String.valueOf(rtype.charAt(1));
+                sOrt = String.valueOf(rtype.charAt(2));
+                startTime = rs.getString("start_time");
+                endTime = rs.getString("end_time");
+                String uid = rs.getString("uid");
                 dbUtil.close();
-                return new Requests(rid,fromUid,fromName,toUid,toName,level,meRoOthers,type,sOrt,startTime,endTime,"",uid);
+                return new Requests(rid, fromUid, fromName, toUid, toName, level, meRoOthers, type, sOrt, startTime, endTime, "", uid);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -334,32 +331,30 @@ public class RequestMapperImpl implements RequestMapper {
 
     @Override
     public void changeToMyRequest(String rid, String uid, String fromUid, String toUid, String s) {
-        String newTime=TimeStamp.getTimeStamp();
+        String newTime = TimeStamp.getTimeStamp();
         dbUtil.getConnection();
-        String sql="update request " +
-                "set rid='"+newTime+"',uid='"+toUid+"',from_uid='"+uid+"',to_uid='"+uid+"',rtype='"+s+"' " +
-                "where rid='"+rid+"'";
+        String sql = "update request " +
+                "set rid='" + newTime + "',uid='" + toUid + "',from_uid='" + uid + "',to_uid='" + uid + "',rtype='" + s + "' " +
+                "where rid='" + rid + "'";
         dbUtil.executeUpdate(sql);
         dbUtil.close();
     }
 
 
-    public int isRepeatOfMyRequest(String toUid,String type,String level){
+    public int isRepeatOfMyRequest(String toUid, String type, String level) {
 
-        Map<String,Object> map= ThreadLocalUtil.get();
-        String uid=(String) map.get("uid");
-        return repeatTest(uid, toUid, type,level);
-    }
-    public int isRepeatOfOthersRequest(String who,String  toUid,String type,String level){
-
-        return repeatTest(who, toUid, type,level);
+        Map<String, Object> map = ThreadLocalUtil.get();
+        String uid = (String) map.get("uid");
+        return repeatTest(uid, toUid, type, level);
     }
 
-    private int repeatTest(String who, String toUid, String type,String level) {
-        //由外层调用，不控制数据库的连接和关闭
-//        dbUtil.getConnection();
+    public int isRepeatOfOthersRequest(String who, String toUid, String type, String level) {
 
-        String sql="select * from request where uid='"+toUid+"' and from_uid='"+who+"' and to_uid='"+who+"' and level='"+level+"' and rtype='0"+type+"'";
+        return repeatTest(who, toUid, type, level);
+    }
+
+    private int repeatTest(String who, String toUid, String type, String level) {
+        String sql = "select * from request where uid='" + toUid + "' and from_uid='" + who + "' and to_uid='" + who + "' and level='" + level + "' and rtype='0" + type + "'";
         try (ResultSet rs = dbUtil.executeQuery(sql)) {
             try {
                 if (rs.next()) {
@@ -373,7 +368,7 @@ public class RequestMapperImpl implements RequestMapper {
             throw new RuntimeException(e);
         }
 
-        sql="select * from request where uid='"+who+"' and to_uid='"+toUid+"' and level='"+level+"' and rtype='1"+type+"'";
+        sql = "select * from request where uid='" + who + "' and to_uid='" + toUid + "' and level='" + level + "' and rtype='1" + type + "'";
         try (ResultSet rs = dbUtil.executeQuery(sql)) {
             try {
                 if (rs.next()) {

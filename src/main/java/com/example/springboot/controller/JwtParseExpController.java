@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/test")
 public class JwtParseExpController {
     @GetMapping("/jwtParse")
-    public Result<String > test(){
+    public Result<String> test() {
 //        //验证token
 //        try {
 //            Map<String,Object> claims=JwtUtil.parseToken(token);

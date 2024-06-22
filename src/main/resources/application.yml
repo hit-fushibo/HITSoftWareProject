@@ -3,10 +3,10 @@ spring:
     name: spring-boot
   datasource:
     driver-class-name: org.sqlite.JDBC
-#    remote
-#    url: /hy-tmp/webapp
+    #    remote
+    #    url: /hy-tmp/webapp
 
-#    local
+    #    local
     url: D:\\code\\SoftWareProject\\backend\\webapp
 
 server:

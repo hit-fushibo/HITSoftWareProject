@@ -14,29 +14,18 @@ import java.util.ArrayList;
 @RequestMapping("/tree")
 public class TreeController {
 
-
     @Autowired
     private TreeService treeService;
 
+    /**
+     * 获取指定用户师承树的接口
+     *
+     * @param uid 用户uid
+     * @return 带有师承树信息的响应数据
+     */
     @PostMapping("/getTree")
-    public Result<ArrayList<Node>> getTree(String uid){
-        ArrayList<Node> nodes=treeService.getTree(uid);
-
-        //-----for test-----
-//        ArrayList<Node> nodes=new ArrayList<>();
-//        Node node=new Node("123456789","1","","zhangsan");
-//        node.addRelation("0","202005","202106");
-//        node.addRelation("1","202301","202305");
-//        nodes.add(node);
-//
-//        node=new Node("987654321","2","","lisi");
-//        node.addRelation("0","202005","202106");
-//        node.addRelation("1","202301","202305");
-//        nodes.add(node);
-//
-//        node=new Node("456789123","0","","lisi");
-//        nodes.add(node);
-        //-----for test-----
+    public Result<ArrayList<Node>> getTree(String uid) {
+        ArrayList<Node> nodes = treeService.getTree(uid);
         return Result.success(nodes);
     }
 }

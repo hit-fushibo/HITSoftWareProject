@@ -12,8 +12,8 @@ public class DBUtil {
     private String dbPath;
     private Connection connection;
     private Statement statement;
-    public void getConnection()
-    {
+
+    public void getConnection() {
         try {
             this.connection = DriverManager.getConnection("jdbc:sqlite:" + dbPath);
             this.statement = this.connection.createStatement();
@@ -24,7 +24,7 @@ public class DBUtil {
 
     public void executeUpdate(String sql) {
         try {
-            if(this.statement==null){
+            if (this.statement == null) {
                 System.out.println("db closed");
             }
             this.statement.executeUpdate(sql);
@@ -47,11 +47,11 @@ public class DBUtil {
         try {
             if (this.statement != null) {
                 this.statement.close();
-                this.statement=null;
+                this.statement = null;
             }
             if (this.connection != null) {
                 this.connection.close();
-                this.connection=null;
+                this.connection = null;
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
