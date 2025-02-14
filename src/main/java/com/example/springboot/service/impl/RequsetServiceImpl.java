@@ -253,7 +253,7 @@ public class RequsetServiceImpl implements RequestService {
         //根据request中的内容修改tree表
         if (Objects.equals(meRoOthers, "0")) {
             if (Objects.equals(type, "0")) {
-                if (Objects.equals(sOrt, "0")) {
+                if (Objects.equals(sOrt, "1")) {
                     //删除自己的学生
                     tid = request.getFromUid();
                     sid = request.getUid();
@@ -266,8 +266,8 @@ public class RequsetServiceImpl implements RequestService {
                 treeMapper.del(tid, sid, level);
 
             } else if (Objects.equals(type, "1")) {
-                if (Objects.equals(sOrt, "0")) {
-                    //增加自己老师
+                if (Objects.equals(sOrt, "1")) {
+                    //增加自己学生
                     tid = request.getFromUid();
                     sid = request.getUid();
                 } else {
